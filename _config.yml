@@ -2,10 +2,11 @@
 #   Main Configs   #
 # ---------------- #
 baseurl:
-url: https://nyaaarlathotep.github.io/
+url: https://nyaaarlathotep.github.io
 date_format: "ordinal"
 title: nyaaar's Blog
-subtitle: ""
+subtitle: "少摸鱼，多学习。
+博客内容是自己对学习内容的再整理，如果有疏漏错误请不吝赐教。"
 description: "nyaaar的个人技术博客,记录整理一下学到的新知识"
 keywords: blog
 timezone: Asia/Shanghai
@@ -27,11 +28,11 @@ components:
         hide-platforms: qq,facebook
     # 不蒜子访问统计
     busuanzi:
-        enabled: false
+        enabled: true
         start_date: 2020-05-03
     # My Popular Repositories
     side_bar_repo:
-        enabled: true
+        enabled: false
         limit: 5
     # 文章字数统计
     word_count:
