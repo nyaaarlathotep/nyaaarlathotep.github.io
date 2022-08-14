@@ -8,8 +8,6 @@ tags: [spring]
 essays: true  
 ---
 
-# 前言
-
 `@ControllerAdvice `是Spring MVC一个强大的工具，可以对Controller做一些全局的增强和处理。
 
 Spring boot中常用`@RestControllerAdvice `对服务所有的controller进行统一的异常处理。

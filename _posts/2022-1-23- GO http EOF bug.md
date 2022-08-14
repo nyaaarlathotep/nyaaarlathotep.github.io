@@ -8,6 +8,8 @@ tags: [solution]
 essays: true  
 ---
 
+GO http post unexpected EOF问题的解决方案
+
 # 解决方案
 
 ## req.Close = true
