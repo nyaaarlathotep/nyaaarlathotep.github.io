@@ -8,6 +8,8 @@ tags: [Spring]
 essays: true  
 ---
 
+# 前言
+
 为了保证数据的一致性，数据库为我们提供了事务，可以让数据更新一起成功或者一起失败。
 
 在Spring中，我们的业务逻辑也需要使用事务。
@@ -197,17 +199,17 @@ this. 和 调用注入的service. 的不同让我们的代码行为产生了不�
 
 ## callThis的调用栈
 
-![test3stack.png](https://raw.githubusercontent.com/nyaaarlathotep/nyaaar.github.io/gh-pages/assets/images/transactional/test3stack.png)
+![test3stack.png](/images/transactional/test3stack.png)
 
 ## callInjection的调用栈
 
-![test4stack.png](https://raw.githubusercontent.com/nyaaarlathotep/nyaaar.github.io/gh-pages/assets/images/transactional/test4stack.png)
+![test4stack.png](/images/transactional/test4stack.png)
 
 可以看到，callThis调用的还是原来的方法，而callInjection调用的是Spring通过cglib加强过的方法，是通过proxy调用进我们的方法的，是有aop增强过的。
 
 自然，只有callInjection的方法的事务会生效。
 
-![test4aop.png](https://raw.githubusercontent.com/nyaaarlathotep/nyaaar.github.io/gh-pages/assets/images/transactional/test4aop.png)
+![test4aop.png](/images/transactional/test4aop.png)
 
 同时，也可以看到`@Transactional`具体实施的地方。
 

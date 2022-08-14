@@ -2,9 +2,9 @@
 #   Main Configs   #
 # ---------------- #
 baseurl:
-url: https://mazhuang.org
+url: https://nyaaarlathotep.github.io/
 date_format: "ordinal"
-title: Blog
+title: nyaaar's Blog
 subtitle: ""
 description: "nyaaar的个人技术博客,记录整理一下学到的新知识"
 keywords: blog

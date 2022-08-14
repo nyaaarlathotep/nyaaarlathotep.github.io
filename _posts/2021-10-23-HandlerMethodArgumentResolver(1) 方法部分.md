@@ -8,6 +8,8 @@ tags: [spring]
 essays: true   
 ---
 
+# 前言
+
 Spring MVC十分强大，在私底下做了很多工作。
 
 其中一个让我疑惑的地方就是controller，它是如何把一个网络的请求接入，解析并得到我们所需要的参数的呢？这样我们的工作只剩下编写我们所需要的入口以及所需要的参数，也就是一个接口，其他工作都交付给Spring来替我们完成了。有时候我们会给一些注解来对我们所需的参数进行标志，辅助Spring进行工作，比如`@PathVarible`、`@RequestParam`、`@RequestBody`，但更神秘的是，有时候出错，得不到需要的参数，但你把这些画蛇添足的注解删除，全权委托给Spring来帮助解析所需的参数，反而能达到目标，得到相应的参数。
@@ -20,13 +22,13 @@ Spring MVC十分强大，在私底下做了很多工作。
 
 我大致将HandlerMethodArgumentResolver的实现分为了三类，第一类最常用，也就对应着`@PathVarible`、`@RequestParam`这些注解；第二类与第一类对应，不过不再进行筛选处理，直接将参数作为一个map传入，由使用者自行处理；第三类是一些原生的Servlet api，在需要使用的时候直接注入；第四类对应`@RequestBody`的注解，会从http请求的请求体中获取对应的参数，这一种解析方式还和http请求的协商过程关系很大。
 
-![nameValue](https://raw.githubusercontent.com/nyaaarlathotep/nyaaar.github.io/gh-pages/assets/images/AbstractNamedValueMethodArgumentResolver.png)
+![nameValue](/images/AbstractNamedValueMethodArgumentResolver.png)
 
-![mapValue](https://raw.githubusercontent.com/nyaaarlathotep/nyaaar.github.io/gh-pages/assets/images/MapMethodArgumentResolver.png)
+![mapValue](/images/MapMethodArgumentResolver.png)
 
-![servletValue](https://raw.githubusercontent.com/nyaaarlathotep/nyaaar.github.io/gh-pages/assets/images/ServletMethodArgumentResolver.png)
+![servletValue](/images/ServletMethodArgumentResolver.png)
 
-![bodyValue](https://raw.githubusercontent.com/nyaaarlathotep/nyaaar.github.io/gh-pages/assets/images/AbstractMessageConverterMethodArgumentResolver.png)
+![bodyValue](/images/AbstractMessageConverterMethodArgumentResolver.png)
 
 其中省略了一些我不常用的实现，比如自动从Cookie，Session等中取值。
 
