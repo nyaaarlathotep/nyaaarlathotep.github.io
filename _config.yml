@@ -2,12 +2,12 @@
 #   Main Configs   #
 # ---------------- #
 baseurl:
-url: https://baidu.com
+url: https://mazhuang.org
 date_format: "ordinal"
 title: Blog
-subtitle: "nyaaar's blog"
+subtitle: ""
 description: "nyaaar的个人技术博客,记录整理一下学到的新知识"
-keywords:
+keywords: blog
 timezone: Asia/Shanghai
 encoding: "utf-8"
 # 页面左下角显示的年份
@@ -38,9 +38,6 @@ components:
         enabled: true
     # 页面右上角，以及「关于」页面的二维码
     # 修改图片请替换 assets/images/qrcode.jpg
-    qrcode:
-        enabled: true
-        # image_alt: 闷骚的程序员
     # 维基索引页使用哪种视图，支持 列表（list）/分类（cate）
     wiki:
         view: cate
@@ -57,7 +54,7 @@ highlight_theme: github
 author: nyaaar
 organization: 
 organization_url: 
-github_username: nyaaarlathotep 
+github_username: nyaaarlathotep
 location: Shanghai, China
 email: nyaaarlathotep@163.com
 
@@ -80,10 +77,6 @@ navs:
 #   -
 #     href: /open-source/
 #     label: 开源
-
-  -
-    href: /wiki/
-    label: 维基
 
   -
     href: /links/
@@ -136,17 +129,17 @@ disqus:
     username: 
 # gitment 配置参考：https://imsun.net/posts/gitment-introduction/
 gitment:
-    # owner: mzlogin
-    # repo: blog-comments
-    # oauth:
-      # client_id: d2e1cbbd298958076462
-      # client_secret: b42a4178e5fd4a7cf63189ef4b1453b05c375709
+    owner: mzlogin
+    repo: blog-comments
+    oauth:
+        client_id: d2e1cbbd298958076462
+        client_secret: b42a4178e5fd4a7cf63189ef4b1453b05c375709
 # gitalk 配置参考：https://github.com/gitalk/gitalk#install
 gitalk:
-    # owner: mzlogin
-    # repo: blog-comments
-    # clientID: d2e1cbbd298958076462
-    # clientSecret: b42a4178e5fd4a7cf63189ef4b1453b05c375709
+    owner: mzlogin
+    repo: blog-comments
+    clientID: d2e1cbbd298958076462
+    clientSecret: b42a4178e5fd4a7cf63189ef4b1453b05c375709
 # utterances 配置参考：https://utteranc.es/
 utterances:
     repo: mzlogin/blog-comments
@@ -169,7 +162,7 @@ simple_jekyll_search:
 #      Google      #
 # ---------------- #
 google:
-    analytics_id: # UA-80669434-1
+    analytics_id: UA-80669434-1
     adsense:
         footer: true
         sidebar: true 
