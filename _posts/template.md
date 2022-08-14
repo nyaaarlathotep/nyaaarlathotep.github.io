@@ -7,3 +7,5 @@ keywords: keyword1, keyword2
 ---
 
 Content here
+
+![name](/images/posts/com/*)
