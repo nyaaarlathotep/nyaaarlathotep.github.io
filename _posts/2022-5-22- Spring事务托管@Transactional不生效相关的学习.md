@@ -4,7 +4,8 @@ title: Spring事务托管@Transactional不生效相关的学习
 date: 2022-5-22 9:00:00 +0900
 description: Spring事务托管@Transactional不生效相关的学习
 img: post-1.jpg # Add image post (optional)
-tags: [Spring]
+categories: [solution, Spring]
+keywords: 事务, @Transactional
 essays: true  
 ---
 
