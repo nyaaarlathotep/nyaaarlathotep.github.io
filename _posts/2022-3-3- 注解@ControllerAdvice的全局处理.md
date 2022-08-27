@@ -4,7 +4,8 @@ title: 注解@ControllerAdvice的全局处理
 date: 2022-3-3 9:00:00 +0900
 description: 注解@ControllerAdvice的全局处理
 img: post-1.jpg # Add image post (optional)
-tags: [spring]
+categories: [Spring]
+keywords: Spring, ControllerAdvice
 essays: true  
 ---
 

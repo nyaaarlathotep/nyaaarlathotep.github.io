@@ -4,7 +4,8 @@ title: GO http post unexpected EOF问题的解决方案
 date: 2022-1-23 9:00:00 +0900
 description: GO http post EOF问题的解决方案
 img: post-1.jpg # Add image post (optional)
-tags: [solution]
+categories: [solution, GO]
+keywords: GO, http
 essays: true  
 ---
 
