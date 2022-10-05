@@ -21,6 +21,7 @@ permalink: /about/
 <li>{{website.sitename }}：<a href="{{ website.url }}" target="_blank">@{{ website.name }}</a></li>
 {% endfor %}
 </ul>
+<a href="https://www.flaticon.com/free-icons/magpie" title="magpie icons">Magpie icons created by bsd - Flaticon</a>
 
 ## Skill Keywords
 
