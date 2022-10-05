@@ -1,8 +1,8 @@
 ---
 layout: post
-title: template page
+title: Swagger 与 自定义 interceptor 冲突，导致 Swagger 404 的解决方案
 categories: [solution]
-description: some word here
+description: Swagger3 版本较高，网络上的解决方案多数是针对低版本的，无法解决问题。在不想降版本的情况下，该如何解决这个问题呢？
 keywords: Java, Spring
 ---
 
