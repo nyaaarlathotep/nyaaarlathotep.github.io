@@ -18,7 +18,7 @@ keywords: Java, Spring
 
 # 解决方案
 
-1. 如果你是旧版本的 Swagger，可以使用这个方法解决：找到自己的 Swagger 版本对应的页面资源的位置，并通过重写自己实现的 WebMvcConfigurer 中的 addResourceHandlers 方法，手动配置 Swagger 页面的静态资源路径，使 Spring 可以成功找到 Swagger-ui.html 页面的资源。如：
+1.如果你是旧版本的 Swagger，可以使用这个方法解决：找到自己的 Swagger 版本对应的页面资源的位置，并通过重写自己实现的 WebMvcConfigurer 中的 addResourceHandlers 方法，手动配置 Swagger 页面的静态资源路径，使 Spring 可以成功找到 Swagger-ui.html 页面的资源。如：
 
 ```java
    @Override
@@ -32,7 +32,7 @@ keywords: Java, Spring
        super.addResourceHandlers(registry);
    }
 ```
-2. （推荐）找到自己 Swagger 对应的 jar 包，找到与自己定义的 WebMvcConfigurer 发生冲突的，Swagger 自己实现的 WebMvcConfigurer。这个可能是在 Swagger 相关的包下 ，也有可能在 Springfox 或者 openapi 相关的某个包下。
+2.（推荐）找到自己 Swagger 对应的 jar 包，找到与自己定义的 WebMvcConfigurer 发生冲突的，Swagger 自己实现的 WebMvcConfigurer。这个可能是在 Swagger 相关的包下 ，也有可能在 Springfox 或者 openapi 相关的某个包下。
 
    我使用的是 openapi，在我的版本中，是在 Springdoc-openapi-ui 包下的 org.Springdoc.webmvc.ui 下的 SwaggerWebMvcConfigurer 类，就是它冲突了。
 
