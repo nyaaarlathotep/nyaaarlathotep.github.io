@@ -3,7 +3,7 @@ layout: post
 title: Obsidian 网页剪裁解决方案
 date: 2024-1-14 9:00:00 +0900
 categories: [Obsidian, solution]
-description: 和朋友聊天时，他讲了他遇到的一个了一个生产环境的 JVM GC 问题，很典型，在这里整理记录一下。
+description: 我将笔记从印象笔记迁移至 Obsidian 后已经一段时间了，使用体验良好。但印象笔记的网页剪裁功能十分便利，我迁移完成后没有来得及找到替代品。
 keywords: solution, Obsidian
 essays: true 
 ---
@@ -28,7 +28,7 @@ Markdownload 是一个简单用于将网页保存为 md 文件的插件，开始
 
 这也是一个低耦合的两个部件组合为一个新功能的实际案例。
 
-## 1. Markdownload 插件
+## 1. 浏览器 Markdownload 插件
 
 从你的浏览器的插件商店获取 Markdownload 插件并启用。
 
@@ -36,12 +36,16 @@ Markdownload 是一个简单用于将网页保存为 md 文件的插件，开始
 
 ![Markdownload](/images/Obsidian/1705202078074.png)
 
-对 Markdownload 按自己需要进行配置。我按照时间建立文件夹进行分类，在配置页面提供了其他自定义的替换占位符，可以根据自己的需要进行配置使用。
+对 Markdownload 按自己需要进行配置
 
 - 配置存放裁剪内容的 Vault
-- 配置存放裁剪内容的文件夹名称
 
 ![Markdownload](/images/Obsidian/1705203677631.png)
+
+- 配置存放裁剪内容的文件夹名称
+  - 开启 Obsidian 集成开关
+  - 保证在 Obsidian 中存在对应的 Valut
+  - 我按照时间建立文件夹进行分类，插件作者在配置页面提供了其他的替换占位符，可以根据自己的需要进行配置使用。
 
 ![Markdownload](/images/Obsidian/1705204155676.png)
 
@@ -57,13 +61,13 @@ Markdownload 是一个简单用于将网页保存为 md 文件的插件，开始
 
 ## 2. Obsidian Advanced Obsidian URI 插件
 
-从 Obsidian 社区插件商店获取 Advanced Obsidian URI 插件，安装，即可。
+从 Obsidian 社区插件商店获取 Advanced Obsidian URI 插件，安装，启用，即可。
 
 ![Advanced Obsidian URI](/images/Obsidian/1705202043053.png)
 
 ## 3. Obsidian Local Images Plus 插件
 
-将网络剪裁中的图片文件自动转化为本地图片文件，永久保存。
+将网络剪裁中的图片文件自动转化为本地图片文件，永久保存。直接裁剪笔记中的图片仍然是网络外链的形式，如果在服务器上失效，本地也会失效。
 
 ![Advanced Obsidian URI](/images/Obsidian/1705204560268.png)
 
