@@ -1,7 +1,7 @@
 ---
 layout: post
 title: SICP Exercise in chapter1
-date:  2024-10-11 18:00:00 +0900
+date:  2024-10-01 18:00:00 +0900
 description: Let's learn some SICP. It's chill so far.
 categories: [FP, SICP, Scheme]
 keywords: SICP, Scheme
