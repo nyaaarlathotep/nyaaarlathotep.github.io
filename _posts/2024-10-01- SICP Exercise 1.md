@@ -18,6 +18,8 @@ essays: true
 
 - Tree Recursion
 
+The detailed mathematical explanation of orders of growth.
+
 ## 1.1
 
 ### 1.1
@@ -227,3 +229,28 @@ The procedure takes row as x, column as y and index from 1.
 ### 1.13
 
 Math class, isn't it?
+
+### 1.14
+
+steps: O(2^n)? There are two cases every step.
+
+### 1.15
+
+a. 5 times.
+
+12.15/3 = 4.05
+
+4.05/3 = 1.35
+
+1.35/3 = 0.45
+
+0.45/3 = 0.15
+
+0.15/3 = 0.05
+
+b. space: O(log(n)), time: O(log(n))
+
+3^x = n-> x = log(n)
+
+### 1.16
+
