@@ -82,7 +82,7 @@ if (and #t #t) b a-> b -> 4
 
 > This alternative “fully expand and then reduce” evaluation method is known as normal-order evaluation, in contrast to the “evaluate the arguments and then apply” method that the interpreter actually uses, which is called applicative-order evaluation.
 
-神秘哦。(define (p) (p)) 会怎么展开我都无法预期，尝试了下会等待输入。
+神秘哦。`(define (p) (p))` 会怎么展开我都无法预期，尝试了下会等待输入。
 
 哦，applicative-order 因为传入的时候就会执行会直接卡住。normal-order  会在 if 后还是前展开呢？按这个题意是先判断再展开了吗。
 
@@ -132,4 +132,43 @@ if (and #t #t) b a-> b -> 4
  (cube 27)
  (cube 64)
 ```
+
+### 1.9
+
+The first one is recursive, the second one is iterative.
+
+### 1.10
+
+```
+(A 1 10) -> (A 0 (A 1 9)) ->  (A 0  (A 0 (A 1 8)) ) -> (* 2  (A 0 (A 1 8)) ) -> (* 2 (* 2  (A 1 8)) ) -> 2^10
+```
+
+that is `( A 1 n ) -> (pow 2 n)`
+
+```
+(A 2 4) -> ( A 1 ( A 2 3 ) ) -> ( pow 2 ( A 2 3 ) ) -> ( pow 2 ( pow 2 ( A 2 2 ) ) ) -> ( pow 2 ( pow 2  ( pow 2 ( A 2 1 ) )  ) ) ->  ( pow 2 ( pow 2  ( pow 2 2 )  ) ) -> 65536
+```
+
+that is `( A 2 y ) -> (pow  2 (pow 2 (pow...`
+
+```
+(A 3 3) -> ( A 2 ( A 3 2) ) -> ( A 2 ( A 2 ( A 3 1 ) ) ) -> ( A 2 ( A 2 2 ) ) -> ( A 2 4 ) -> 65536
+```
+
+So,
+
+`(define (f n) (A 0 n)) -> (define (f n) (* 2 n))`
+
+```
+(define (pow a b) 
+    (if (= b 0)
+        a
+        (* a (pow a (- b 1)))
+    )
+)
+```
+
+` (define (g n) (A 1 n)) -> (define (g n) (pow 2 n))`
+
+`(define (h n) (A 2 n))-> (pow  2 (pow 2 (pow...`
 
