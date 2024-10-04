@@ -12,7 +12,13 @@ essays: true
 
 很早就涉及到尾递归了，这对于递归真的很重要。
 
-## Exercise 1
+- linear recursive process
+  - iterative process
+  - recursive process
+
+- Tree Recursion
+
+## 1.1
 
 ### 1.1
 
@@ -133,6 +139,8 @@ if (and #t #t) b a-> b -> 4
  (cube 64)
 ```
 
+## 1.2
+
 ### 1.9
 
 The first one is recursive, the second one is iterative.
@@ -172,3 +180,50 @@ So,
 
 `(define (h n) (A 2 n))-> (pow  2 (pow 2 (pow...`
 
+### 1.11
+
+recursive process:
+
+```
+(define (f n) 
+	(if (< n 3) 
+		n
+		(+ 
+			(f (- n 1))
+			(* 2 (f (- n 2)))
+			(* 3 (f (- n 3)))
+		)
+	)
+)
+```
+
+ iterative process.
+
+```
+(define (f n)
+    (cond ((< n 3) n)
+    (else (f_iter 2 1 0 (- n 2))))
+)
+
+(define (f_iter a b c count)
+    (if (= count 0)
+        a
+        (f_iter (+ a (* 2 b) (* 3 c)) a b (- count 1))))
+```
+
+### 1.12
+
+The procedure takes row as x, column as y and index from 1.
+
+```
+(define (pascal x y)
+    (cond 
+        ((or (= y 1) (= y x)) 1)
+        (else (+ (pascal (- x 1) (- y 1)) (pascal (- x 1) y)))
+    )
+)
+```
+
+### 1.13
+
+Math class, isn't it?
