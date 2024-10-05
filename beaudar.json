@@ -1,3 +1,5 @@
 {
-  "origins": ["https://beaudar.lipk.org","https://nyaaarlathotep.github.io/.*","https://nyaaarlathotep.github.io/"]
+  "origins": [
+    "https://nyaaarlathotep.github.io"
+  ]
 }
