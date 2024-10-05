@@ -125,27 +125,27 @@ comments_provider: beaudar
 # !!!重要!!! 请修改下面这些信息为你自己申请的
 # !!!Important!!! Please modify infos below to yours
 # disqus 配置参考：https://disqus.com
-disqus:
-    username: 
+# disqus:
+    # username: 
 # gitment 配置参考：https://imsun.net/posts/gitment-introduction/
-gitment:
-    owner: mzlogin
-    repo: blog-comments
-    oauth:
-        client_id: d2e1cbbd298958076462
-        client_secret: b42a4178e5fd4a7cf63189ef4b1453b05c375709
-# gitalk 配置参考：https://github.com/gitalk/gitalk#install
-gitalk:
-    owner: mzlogin
-    repo: blog-comments
-    clientID: d2e1cbbd298958076462
-    clientSecret: b42a4178e5fd4a7cf63189ef4b1453b05c375709
-# utterances 配置参考：https://utteranc.es/
-utterances:
-    repo: mzlogin/blog-comments
-# beaudar 配置参考：https://beaudar.lipk.org/
+# gitment:
+#     owner: mzlogin
+#     repo: blog-comments
+#     oauth:
+#         client_id: d2e1cbbd298958076462
+#         client_secret: b42a4178e5fd4a7cf63189ef4b1453b05c375709
+# # gitalk 配置参考：https://github.com/gitalk/gitalk#install
+# gitalk:
+#     owner: mzlogin
+#     repo: blog-comments
+#     clientID: d2e1cbbd298958076462
+#     clientSecret: b42a4178e5fd4a7cf63189ef4b1453b05c375709
+# # utterances 配置参考：https://utteranc.es/
+# utterances:
+#     repo: mzlogin/blog-comments
+# # beaudar 配置参考：https://beaudar.lipk.org/
 beaudar:
-    repo: mzlogin/blog-comments
+    repo: nyaaarlathotep/blog.beaudar
 # 在使用其它评论组件时可点击显示 Disqus
 lazy_load_disqus : false
 
