@@ -254,3 +254,73 @@ b. space: O(log(n)), time: O(log(n))
 
 ### 1.16
 
+```
+(define (fast_iter_expt b n)
+    (define (aux res base remain_n)
+        (cond 
+            ((= remain_n 1) (* res base))
+            ((even? remain_n) (aux res (* base base) (/ remain_n 2)))
+            (else (aux (* res base) base (- remain_n 1)))
+        )
+    )
+    (aux 1 b n)
+)
+```
+
+### 1.17
+
+```
+(define (alter_mup a b) 
+    (cond
+        ((= b 1) a)
+        ((even? b) (alter_mup (double a) (halve b)))
+        (else (+ a (alter_mup a (- b 1))))
+    )
+)
+```
+
+### 1.18
+
+well, did I misunderstand?
+
+```
+(define (alter_iter_mup a b) 
+    (define (aux res base remain_n)
+        (cond 
+            ((= remain_n 1) (+ res base))
+            ((even? remain_n) (aux res (double base) (halve remain_n)))
+            (else (aux (+ res base) base (- remain_n 1)))
+        )
+    )
+    (aux 0 a b)
+)
+```
+
+### 1.19
+
+Oh, brillant! How would you come up with that. It's still a computation. Let's have a try.
+
+really, It's much harder than I thought.
+
+```
+(define (fib n)
+ (fib-iter 1 0 0 1 n))
+(define (fib-iter a b p q count)
+ (cond ((= count 0) b)
+ ((even? count)
+ (fib-iter a
+ b
+ (+ (* p p) (* q q))
+ (+ (* p q) (* p q) (* q q))
+ (/ count 2)))
+ (else (fib-iter (+ (* b q) (* a q) (* a p))
+ (+ (* b p) (* a q))
+ p
+ q
+ (- count 1)))))
+```
+
+
+
+
+
