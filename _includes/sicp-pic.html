@@ -11,11 +11,8 @@
       }
       const data = await response.json();
 
-      // 随机选择一个元素
       const randomIndex = Math.floor(Math.random() * data.length);
       const randomImage = data[randomIndex];
-
-      // 获取 download_url
       const downloadUrl = randomImage.download_url;
       console.log('Random Image URL:', downloadUrl);
 
@@ -33,14 +30,8 @@
     }
   });
 
-  // JavaScript 中的图片 URL 字符串
-  // const imageUrl = 'https://i.loli.net/2018/12/12/5c111b8240591.png';
   const imageUrl = getRandomImageUrl();
-
-  // 创建一个 img 元素
   const imgElement = document.createElement('img');
   imgElement.src = imageUrl;
-
-  // 将 img 元素添加到 HTML 中的某个容器中
   document.getElementById('image-container').appendChild(imgElement);
 </script>
