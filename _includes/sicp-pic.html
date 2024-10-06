@@ -1,4 +1,4 @@
-<div style="height: 15px;"></div>
+
 <div id="image-container" style="margin-right: 5%;"></div>
 <script>
   async function getRandomImageUrl() {
@@ -25,7 +25,7 @@
     const imageUrl = await getRandomImageUrl();
     if (imageUrl) {
       const imageContainer = document.getElementById('image-container');
-      imageContainer.innerHTML = `<img src="${imageUrl}" alt="Random Image" style="max-width: 100%;">`;
+      imageContainer.innerHTML = `<div style="height: 15px;"></div><img src="${imageUrl}" alt="random sicp image" style="max-width: 100%;">`;
     } else {
     }
   });
