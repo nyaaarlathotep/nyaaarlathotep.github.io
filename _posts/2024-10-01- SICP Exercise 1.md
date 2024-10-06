@@ -18,6 +18,11 @@ essays: true
 
 - Tree Recursion
 
+### order
+
+- normal-order
+- applicative-order
+
 The detailed mathematical explanation of orders of growth.
 
 ## 1.1
@@ -298,9 +303,9 @@ well, did I misunderstand?
 
 ### 1.19
 
-Oh, brillant! How would you come up with that. It's still a computation. Let's have a try.
+Oh, How would you come up with that. It's still a computation. Let's have a try.
 
-really, It's much harder than I thought.
+really, It's much harder than I expected.
 
 ```
 (define (fib n)
@@ -320,7 +325,41 @@ really, It's much harder than I thought.
  (- count 1)))))
 ```
 
+### 1.20
 
+About 2 times?
+
+### 1.21
+
+```
+> (smallest-divisor 199)
+199
+> (smallest-divisor 1999)
+1999
+> (smallest-divisor 19999)
+7
+```
+
+What should I expected, 19999 takes a lot of time?
+
+### 1.22
+
+racket is hard to deal with output.
+
+``` 
+ (define (find-primes-bigger start count)
+    (define (aux now c)
+        (cond ((= c count) (newline))
+            ((timed-prime-test now) 
+             (display now) 
+             (newline) 
+             (aux (+ 1 now) (+ 1 c)))
+            (else (aux (+ 1 now) c))
+        )
+    )
+    (aux start 0)
+ )
+```
 
 
 
