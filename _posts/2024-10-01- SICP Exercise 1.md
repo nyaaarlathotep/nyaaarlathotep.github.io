@@ -381,3 +381,86 @@ racket is hard to deal with output.
 
 ### 1.24
 
+### 1.25
+
+honestly, I thought so. 
+
+There are still differences. The book's expmod will `remainder`after every square call, while the Hacker's expmod will only `remainder` at last which is not capable for bigger number.
+
+### 1.26
+
+The expmod will be executed twice, just like the normal-order mentioned before. So, this make the O(log n) turn to O(n).
+
+### 1.27
+
+```
+(define (fermat-fool? n)
+    (define (aux times)
+        (cond 
+            ((= times n) true)
+            ((= (expmod times n n) times) (aux (+ times 1)))
+            (else false)
+        )
+    )
+    (aux 1)
+)
+```
+
+```
+> (fermat-fool? 561)
+#t
+> (fermat-fool? 1105)
+#t
+> (fermat-fool? 1729)
+#t
+> (fermat-fool? 2465)
+#t
+> (fermat-fool? 2821)
+#t
+> (fermat-fool? 6601)
+#t
+```
+
+### 1.28
+
+> 因为在计算 $$a^{n-1}$$ 时只有一半的几率会遇到 $1$ 取模 $n$ 的非平凡方根，因此我们至少要执行测试 $n/2$ 次才能保证测试结果的准确性（是的， Miller-Rabin 测试也是一个概率函数）。
+
+really.
+
+```
+
+(define (non-zero-random n)
+    (let ((r (random n)))
+        (if (not (= r 0))
+            r
+            (non-zero-random n))))
+
+(define (Miller-Rabin-test n)
+    (let ((times (ceiling (/ n 2))))
+        (test-iter n times)))
+
+(define (test-iter n times)
+    (cond ((= times 0)
+            #t)
+          ((= (rabin-expmod (non-zero-random n) (- n 1) n)
+              1)
+            (test-iter n (- times 1)))
+          (else
+            #f)))
+
+(define (rabin-expmod base exp m)
+ (cond ((= exp 0) 1)
+    ((and (= (remainder (square base) m ) 1) (not (= base 1)) (not (= base (- m 1)))) 0)
+    ((even? exp)
+        (remainder
+            (square (rabin-expmod base (/ exp 2) m))
+            m))
+    (else
+        (remainder
+        (* base (rabin-expmod base (- exp 1) m))
+        m))))
+
+```
+
+
+
