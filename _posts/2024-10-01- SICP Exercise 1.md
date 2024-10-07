@@ -425,7 +425,7 @@ The expmod will be executed twice, just like the normal-order mentioned before. 
 
 > 因为在计算 $$a^{n-1}$$ 时只有一半的几率会遇到 $1$ 取模 $n$ 的非平凡方根，因此我们至少要执行测试 $n/2$ 次才能保证测试结果的准确性（是的， Miller-Rabin 测试也是一个概率函数）。
 
-really.
+really.	
 
 ```
 
@@ -462,5 +462,85 @@ really.
 
 ```
 
+### 1.29
 
+The problem is how to define the `next` here. I changed the `sum`.
+
+```
+(define (simpson-sum term a next b times)
+ (if (> a b)
+ 0
+ (+ (* (term a) times)
+ (simpson-sum term (next a) next b (
+    if (= times 4) 2 4    
+ )))))
+
+(define (simpson-intergal f a b n)
+    (let ((h (/ (- b a) n)))
+        (define (add-dx x)
+            (+ h x))
+        (* (+ (simpson-sum f (+ a h) add-dx (- b h) 4) (f a) (f b)) (/ h 3))
+    )
+)
+```
+
+Any idea?
+
+```
+> (simpson-intergal cube 0 1 100)
+1/4
+> (simpson-intergal cube 0 1 1000)
+1/4
+> (simpson-intergal cube 0 1 10000)
+1/4
+> (simpson-intergal cube 0 1 1)
+1/3
+```
+
+```
+> (integral cube 0 1 0.01)
+0.24998750000000042
+> (integral cube 0 1 0.001)
+0.249999875000001
+> (integral cube 0 1 0.0001)
+0.24999999874993412
+> (integral cube 0 1 0.00001)
+0.24999999998662864
+> (integral cube 0 1 0.000001)
+0.2500000000014447
+```
+
+wtf... Let's see the right answer.
+
+ok, pass the `k` rather than the num itself.
+
+```
+(define (simpson f a b n)
+    
+    (define h (/ (- b a) n))
+
+    (define (y k)
+        (f (+ a (* k h))))
+
+    (define (factor k)
+        (cond ((or (= k 0) (= k n))
+                1)
+              ((odd? k)
+                4)
+              (else
+                2)))
+    
+    (define (term k)
+        (* (factor k)
+           (y k)))
+
+    (define (next k)
+        (+ k 1))
+
+    (if (not (even? n))
+        (error "n can't be odd")
+        (* (/ h 3)
+           (sum term (exact->inexact 0) next n))))
+
+```
 
