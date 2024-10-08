@@ -692,5 +692,16 @@ null-value -> identity 幺元.
 ) 
 ```
 
+### 1.34
 
+Just bug.
 
+```
+> (f f)
+; application: not a procedure;
+;  expected a procedure that can be applied to arguments
+;   given: 2
+; [,bt for context]
+```
+
+The interpreter try to apply `2`  to `f` which is illegal.
