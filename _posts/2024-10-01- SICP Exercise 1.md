@@ -547,11 +547,150 @@ ok, pass the `k` rather than the num itself.
 ### 1.30
 
 ```
- (define (sum term a next b)
+(define (sum term a next b)
  (define (iter a result)
  (if ()> a b)
  result
  (iter (next a) (+ result (term a)))))
  (iter a 0))
 ```
+
+### 1.31
+
+#### a.
+
+```
+(define (product term a next b)
+    (define (iter a res)
+    (if (> a b)
+    res
+    (iter (next a) (* res (term a)))
+    ))
+    (iter a 1)
+)
+```
+
+factorial:
+
+```
+(defin (factorial s e)
+(define (term a)
+    a
+)
+(define (next a)
+    (+ 1 a)
+)
+(product term s next e)
+)
+```
+
+It seems bad for calculation speed to divide it to two parts.
+
+```
+(define (pi-appro k)
+    (define (next a)
+        (+ a 1)
+    )
+    (define (term-down k)
+        (- (+ k 2) (modulo (+ k 1) 2))
+    )
+    (define (term-up k)
+        (- (+ k 2) (modulo (+ k 2) 2))
+    )
+
+    (* (/ (product term-up 1 next k) (product term-down 1 next k)) (exact->inexact 4))
+)
+```
+
+#### b.
+
+```
+(define (product term a next b)
+ (if (> a b)
+ 1
+ (* (term a)
+ (product term (next a) next b))))
+```
+
+### 1.32
+
+null-value -> identity 幺元.
+
+#### a.
+
+```
+(define (accumulate combiner null-value term a next b)
+    (define (iter a res)
+    (if (> a b)
+    res
+    (iter (next a) (combiner res (term a)))
+    ))
+    (iter a null-value)
+)
+```
+
+```
+(define (product term a next b)
+    (accumulate * 1 term a next b)
+)
+```
+
+```
+> (product (lambda (x) x) 1 (lambda (x) (+ x 1)) 3)
+6
+> (product (lambda (x) x) 1 (lambda (x) (+ x 1)) 4)
+24
+> (product (lambda (x) x) 1 (lambda (x) (+ x 1)) 5)
+120
+```
+
+```
+(define (sum term a next b)
+    (accumulate + 0 term a next b)
+)
+```
+
+#### b.
+
+```
+(define (accumulate combiner null-value term a next b)
+ (if (> a b)
+ null-value
+ (combiner (term a)
+ (accumulate combiner null-value term (next a) next b))))
+```
+
+### 1.33
+
+```
+(define (filtered-accumulate combiner null-value term a next b predicate)
+    (define (iter a res)
+    (if (> a b)
+    res
+    (if (predicate a)
+        (iter (next a) (combiner res (term a)))
+        (iter (next a) res)
+    )
+    ))
+    (iter a null-value)
+)
+```
+
+#### a.
+
+```
+(define (sum-prime-square a b)
+    (filtered-accumulate + 0 square a add1 b prime?)
+)
+```
+
+#### b.
+
+```
+(define (product-less-gcd n)
+    (filtered-accumulate * 1 (lambda (x) x) 1 add1 n (lambda (x) (= 1 (gcd x n))))
+) 
+```
+
+
 
