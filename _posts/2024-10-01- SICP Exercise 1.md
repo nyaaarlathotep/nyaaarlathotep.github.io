@@ -775,3 +775,94 @@ The interpreter try to apply `2`  to `f` which is illegal.
 4.555532270803653
 ```
 
+### 1.37
+
+#### 1.
+
+```
+(define (cont-frac n d k)
+	(define (aux count)
+		(if (= count k)
+			(/ (n k) (d k))
+			(/ (n k) (+ (d k) (aux (+ count 1))))
+		)
+	)
+	(aux 1)
+)
+```
+
+k=11 is enough. The value won't change once k is big enough.
+
+```
+> (cont-frac (lambda (i) 1.0)
+             (lambda (i) 1.0)
+             11)
+0.6180555555555556
+> (cont-frac (lambda (i) 1.0)
+             (lambda (i) 1.0)
+             10)
+0.6179775280898876
+
+```
+
+#### 2.
+
+Ok then.
+
+```
+(define (cont-frac n d k)
+	(define (aux count res)
+		(if (= count 0)
+			res
+			(aux (- count 1) (/ (n k) (+ (d k) res)))
+		)
+	)
+	(aux (- k 1) (/ (n k) (d k)))
+)
+```
+
+### 1.38
+
+```
+(define (integer-division a b)
+	(/ (- a (modulo a b)) b)
+)
+```
+
+
+
+```
+(define (Euler k)
+	(cont-frac 
+		(lambda (x) 1)
+		(lambda (x) 
+			(if (= (modulo x 3) 2)
+				(* 2 (+ 1 (integer-division x 3)))
+				1
+			)
+		)
+		k
+	)
+)
+
+```
+
+### 1.39
+
+```
+(define (tan-cf x k)
+	(cont-frac 
+		(lambda (x)
+			(if (= 1 x)
+				x
+				(- (square x))
+			)
+		)
+		(lambda (x)
+			(- (* 2 x) 1)
+		) 
+		k)
+)
+```
+
+This answer has a lot differences with the inner function `tan`. Why?
