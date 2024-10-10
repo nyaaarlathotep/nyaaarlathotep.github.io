@@ -12,7 +12,7 @@ essays: true
 
 很早就涉及到尾递归了，这对于递归真的很重要。
 
-Due to the shitty input method on Ubuntu, I have no choice but to use English.
+Due to the shitty input method, I have no choice but to use English.
 
 A standard Chinese answer to the book's exercises: https://sicp.readthedocs.io/en/latest/index.html
 
@@ -28,6 +28,15 @@ A standard Chinese answer to the book's exercises: https://sicp.readthedocs.io/e
 - applicative-order
 
 The detailed mathematical explanation of orders of growth.
+
+### first-class elements
+
+> ###  Some of the “rights and privileges” of first-class elements are
+>
+> - They may be named by variables.
+> - They may be passed as arguments to procedures.
+> - They may be returned as the results of procedures.
+> - They may be included in data structures.
 
 ## 1.1
 
@@ -866,3 +875,19 @@ Ok then.
 ```
 
 This answer has a lot differences with the inner function `tan`. Why?
+
+### 1.40
+
+```
+(define (cubic a b c)
+	(lambda (x)
+		(+
+			(* x x x)
+			(* a (square x))
+			(* b x)
+			c
+		)
+	)
+)
+```
+
