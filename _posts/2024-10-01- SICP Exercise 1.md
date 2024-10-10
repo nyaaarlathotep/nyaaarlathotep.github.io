@@ -891,3 +891,96 @@ This answer has a lot differences with the inner function `tan`. Why?
 )
 ```
 
+### 1.41
+
+LOL. The question itself is rather complex.
+
+```
+(define (double f)
+	(lambda (x)
+		(f (f x))
+	)
+)
+
+```
+
+```
+> (((double (double double)) inc) 5)
+21
+
+```
+
+### 1.42
+
+```
+(define (compose f g)
+	(lambda (x)
+		(f (g x))
+	)
+)
+```
+
+### 1.43
+
+```
+(define (repeated f n)
+	(if (= 1 n)
+		f
+		(compose f (repeated f (- n 1)))
+	)
+
+)
+```
+
+### 1.44
+
+```
+(define dx 0.00001)
+```
+
+```
+(define (smooth f)
+	(lambda (x)
+		(/
+		(+ 
+			(f x)
+			(f (+ x dx))
+			(f (- x dx))
+		)
+		3
+		)
+	)
+)
+```
+
+```
+> ((smooth floor) 0.9)
+0.0
+> ((smooth floor) 0.999999999999)
+0.3333333333333333
+> ((smooth floor) 1.0)
+0.6666666666666666
+> ((smooth floor) 1.000000000001)
+0.6666666666666666
+> ((smooth floor) 1.1)
+1.0
+
+```
+
+```
+> (((repeated smooth 3) floor) 1.00001)
+0.8518518518518517
+> (((repeated smooth 3) floor) 1.00002)
+0.8518518518518517
+> (((repeated smooth 3) floor) 1.00003)
+0.9629629629629629
+> (((repeated smooth 3) floor) 1.00004)
+1.0
+> (((repeated smooth 5) floor) 1.00004)
+0.9753086419753085
+> (((repeated smooth 10) floor) 1.00004)
+0.9120560890108215
+
+```
+
+### 1.45
