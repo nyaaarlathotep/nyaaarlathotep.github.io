@@ -985,3 +985,58 @@ LOL. The question itself is rather complex.
 
 ### 1.45
 
+> ## 收敛条件
+>
+> 接着要解决的问题是，找出计算 nn 次方根和收敛计算所需的平均阻尼次数之间的关系，以下是一些实验数据：
+>
+> | n 次方根               | 1    | 2    | 3    | 4    | 5    | 6    | 7    | 8    | ...  | 15   | 16   | ...  | 31   | 32   | ...  |
+> | :--------------------- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+> | 收敛所需的平均阻尼次数 | 1    | 1    | 1    | 2    | 2    | 2    | 2    | 3    | ...  | 3    | 4    | ...  | 4    | 5    | ...  |
+>
+> 可以看出，要使得计算 nn 次方根的不动点收敛，最少需要 ⌊lgn⌋⌊lg⁡n⌋ 次平均阻尼。
+
+Ok. The minum times we need is floor(log(2) n).
+
+> ```
+> (define tolerance 0.00001)
+> (define (fixed-point f first-guess)
+>  (define (close-enough? v1 v2)
+>  (< (abs (- v1 v2))
+>  tolerance))
+>  (define (try guess)
+>  (let ((next (f guess)))
+>  (if (close-enough? guess next)
+>  next
+>  (try next))))
+>  (try first-guess))
+> 
+>  (define (average-damp f)
+>  (lambda (x) (average x (f x))))
+> 
+> (define (average-damp-n-times f n)
+>     ((repeated average-damp n) f))
+> 
+> (define (damped-nth-root n damp-times)
+>     (lambda (x)
+>         (fixed-point 
+>             (average-damp-n-times 
+>                 (lambda (y) 
+>                     (/ x (expt y (- n 1)))) 
+>                 damp-times)
+>             1.0)))
+> 
+> 
+> (define (lg n)
+>     (cond ((> (/ n 2) 1)
+>             (+ 1 (lg (/ n 2))))
+>           ((< (/ n 2) 1)
+>             0)
+>           (else
+>             1)))
+> 
+> 
+> (define (nth-root n)
+>     (damped-nth-root n (lg n)))
+> 
+> ```
+
