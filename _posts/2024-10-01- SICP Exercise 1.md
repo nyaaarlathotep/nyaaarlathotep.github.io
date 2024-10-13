@@ -1040,3 +1040,56 @@ Ok. The minum times we need is floor(log(2) n).
 > 
 > ```
 
+### 1.46
+
+```
+(define (iterative-improve good-enough? improve)
+    (define (try x)
+        (if (good-enough? x)
+            x
+            (try (improve x))
+        )
+    )
+    (lambda (x) (try x))
+)
+
+```
+
+```
+(define (sqrt x)
+    ((iterative-improve 
+    (lambda (guess) 
+        (< (abs (- (square guess) x)) 0.001)
+    ) 
+    (lambda (guess)
+        (average guess (/ x guess))
+    )
+    ) 1)
+)
+
+```
+
+It's not the best solution, I use the `(f guess)` twice.
+
+```
+(define (fixed-point f first-guess)
+    ((iterative-improve 
+    (lambda (guess) (< (abs (- guess (f guess))) 0.00001))
+    f
+    ) first-guess)
+)
+
+```
+
+Ok, I'd better improve it. This one is much more universal.
+
+> ```
+> (define (iterative-improve close-enough? improve)
+>     (lambda (first-guess)
+>         (define (try guess)
+>             (let ((next (improve guess)))
+>                 (if (close-enough? guess next)
+>                     next
+>                     (try next))))
+>         (try first-guess)))
+> ```
