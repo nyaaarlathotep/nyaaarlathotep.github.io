@@ -1,14 +1,16 @@
 ---
 layout: sicp
 title: SICP Exercise in chapter2
-date:  2024-10-14 18:00:00 +0900
-description: Let's learn some SICP. The book is detailed and in-depth.
+date: 2024-10-14 18:00:00 +0900
+description: Let's learn some SICP. Indeed, The book is detailed and in-depth.
 categories: [FP, SICP, Scheme]
 keywords: SICP, Scheme
-essays: true   
+essays: true
 ---
 
 # Chapter 2
+
+The abstraction of data lead to the interface of the data.
 
 ## 2.1
 
