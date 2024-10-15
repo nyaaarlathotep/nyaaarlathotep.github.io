@@ -2,7 +2,7 @@
 layout: sicp
 title: SICP Exercise in chapter2
 date: 2024-10-14 18:00:00 +0900
-description: Let's learn some SICP. Indeed, The book is detailed and in-depth.
+description: Let's learn some SICP. Indeed.
 categories: [FP, SICP, Scheme]
 keywords: SICP, Scheme
 essays: true
