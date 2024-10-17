@@ -117,3 +117,92 @@ Maybe add another layer for edge length?
 )
 ```
 
+### 2.4
+
+```
+ (define (cons x y)
+ (lambda (m) (m x y)))
+ (define (car z)
+ (z (lambda (p q) p)))
+ (define (cdr z)
+ (z (lambda (p q) q)))
+```
+
+```
+> (cons 1 2)
+#<procedure>
+> (car (cons 1 2))
+1
+> (cdr (cons 1 2))
+2
+```
+
+### 2.5
+
+I don't get it, it just means some renames?
+
+Ok. 
+
+```
+(define (cons a b)
+    (* (expt 2 a) (expt 3 b))
+)
+
+(define (car z)
+    (if ( = (remainder z 2) 0)
+        (+ 1 (car (/ z 2)))
+        0
+    )
+)
+(define (cdr z)
+    (if ( = (remainder z 3) 0)
+        (+ 1 (cdr (/ z 3)))
+        0
+    )
+)
+```
+
+### 2.6
+
+Wow... The num means applying how many `f` to `x`. So if you take zero and add as x and f, then the whole pack would be the real nums.
+
+```
+(define (one)
+    (lambda (f)
+        (lambda (x) (f x))
+    )
+)
+(define (two)
+    (lambda (f)
+        (lambda (x) (f (f x)))
+    )
+)
+```
+
+Good news, a + b = b + a.
+
+```
+(define (plus a b)
+    (lambda (f)
+        (lambda (x)
+            ((b f) ((a f) x))
+        )
+    )
+)
+```
+
+Let me guess, what is the definition of multiply?
+
+Well then. Instead of handling x, let's handle f.
+
+```
+(define (multiply a b)
+    (lambda (f)
+        (lambda (x)
+            (b (a f) x)
+        )
+    )
+)
+```
+
+So, the function comes first than the num itself?
