@@ -222,8 +222,6 @@ some test:
 7
 ```
 
-
-
 ### 2.7
 
 ```
@@ -256,4 +254,92 @@ Both addition and subtraction result in a interval of the sum of two intervals.
 It's obvious multiply and divide don't have a proper function of interval for negative numbers.
 
 ### 2.10
+
+How to signal a error in Scheme?
+
+```
+(define (div-interval x y)
+  (if (or (<= 0 (upper-bound y)) (<= 0 (lower-bound y)))
+  	(raise "some bound is zero")
+    (mul-interval x 
+                (make-interval 
+                 (/ 1.0 (upper-bound y)) 
+                 (/ 1.0 (lower-bound y))))
+  )
+)
+```
+
+```
+(define (make-interval a b)
+	(if (or (<= 0 (upper-bound y)) (<= 0 (lower-bound y)))
+		(raise "some bound is zero")
+		(cons a b)
+	)
+)
+```
+
+### 2.11
+
+3*3 = 9 cases in which every case is different. Obviously, it need 4 multiply when two interval are both neg-pos.
+
+ Rewrite this procedure using Ben’s suggestion.
+
+I copied, it's quite annoying.
+
+```
+(define (mul-interval x y)
+  (let ((low-x (lower-bound x))
+        (low-y (lower-bound y))
+        (up-x (upper-bound x))
+        (up-y (upper-bound y)))
+    (cond ((and (>= low-x 0) (>= up-x 0))
+           (cond ((and (>= low-y 0) (>= up-y 0)) ; + + | + +
+                  (make-interval (* low-x low-y)
+                                 (* up-x up-y)))
+                 ((and (<= low-y 0) (>= up-y 0)) ; + + | - +
+                  (make-interval (* up-x low-y)
+                                 (* up-x up-y)))
+                 ((and (<= low-y 0) (<= up-y 0)) ; + + | - -
+                  (make-interval (* up-x low-y)
+                                 (* low-x up-y)))))
+          ((and (<= low-x 0) (>= up-x 0))
+           (cond ((and (>= low-y 0) (>= up-y 0)) ; - + | + +
+                  (make-interval (* low-x up-y)
+                                 (* up-x up-y)))
+                 ((and (<= low-y 0) (>= up-y 0)) ; - + | - + 
+                  (make-interval (min (* low-x up-y) (* up-x low-y))
+                                 (max (* low-x low-y) (* up-x up-y))))
+                 ((and (<= low-y 0) (<= up-y 0)) ; - + | - -
+                  (make-interval (* up-x low-y)
+                                 (* low-x low-y)))))
+          ((and (<= low-x 0) (<= up-x 0))
+           (cond ((and (>= low-y 0) (>= up-y 0)) ; - - | + +
+                  (make-interval (* low-x up-y)
+                                 (* up-x low-y)))
+                 ((and (<= low-y 0) (>= up-y 0)) ; - - | - +
+                  (make-interval (* low-x up-y)
+                                 (* low-x low-y)))
+                 ((and (<= low-y 0) (<= up-y 0)) ; - - | - -
+                  (make-interval (* up-x up-y)
+                                 (* low-x low-y))))))))
+```
+
+### 2.12
+
+```
+(define (make-center-percent c w)
+  (make-interval (- c (* c w)) (+ c (* c w))))
+  
+(define (center i)
+  (/ (+ (lower-bound i) 
+        (upper-bound i)) 
+     2))
+     
+(define (percent i)
+	(/
+		(- (upper-bound i) (center i)) 
+	    (center i)
+	)
+)
+```
 
