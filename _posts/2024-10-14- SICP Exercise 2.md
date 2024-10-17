@@ -12,6 +12,8 @@ essays: true
 
 The abstraction of data lead to the interface of the data.
 
+Church numerals...
+
 ## 2.1
 
 ### 2.1
@@ -167,12 +169,12 @@ Ok.
 Wow... The num means applying how many `f` to `x`. So if you take zero and add as x and f, then the whole pack would be the real nums.
 
 ```
-(define (one)
+(define one
     (lambda (f)
         (lambda (x) (f x))
     )
 )
-(define (two)
+(define two
     (lambda (f)
         (lambda (x) (f (f x)))
     )
@@ -199,10 +201,59 @@ Well then. Instead of handling x, let's handle f.
 (define (multiply a b)
     (lambda (f)
         (lambda (x)
-            (b (a f) x)
+            ((b (a f)) x)
         )
     )
 )
 ```
 
 So, the function comes first than the num itself?
+
+some test:
+
+```
+> ((two add1) 3)
+5
+> ((one add1) 3)
+4
+> (((plus one two) add1) 3)
+6
+> (((multiply two two) add1) 3)
+7
+```
+
+
+
+### 2.7
+
+```
+(define (make-interval a b) (cons a b))
+```
+
+```
+(define (upper-bound c)
+	(max (car c) (cdr c))
+)
+(define (lower-bound c)
+	(min (car c) (cdr c))
+)
+```
+
+### 2.8
+
+```
+(define (sub-interval x y)
+  (make-interval (- (upper-bound x) 
+                    (lower-bound y))
+                 (- (lower-bound x) 
+                    (upper-bound y))))
+```
+
+### 2.9
+
+Both addition and subtraction result in a interval of the sum of two intervals.
+
+It's obvious multiply and divide don't have a proper function of interval for negative numbers.
+
+### 2.10
+
