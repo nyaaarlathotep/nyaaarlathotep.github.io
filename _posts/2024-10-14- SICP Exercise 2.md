@@ -229,12 +229,12 @@ some test:
 ```
 
 ```
-(define (upper-bound c)
-	(max (car c) (cdr c))
-)
-(define (lower-bound c)
-	(min (car c) (cdr c))
-)
+    (define (upper-bound c)
+        (max (car c) (cdr c))
+    )
+    (define (lower-bound c)
+        (min (car c) (cdr c))
+    )
 ```
 
 ### 2.8
@@ -340,6 +340,118 @@ I copied, it's quite annoying.
 		(- (upper-bound i) (center i)) 
 	    (center i)
 	)
+)
+```
+
+### 2.13
+
+Since the tolerance is small enough, I'd try to simplify the formula by ignoring part of the res.
+
+The new multiply assuming all the numbers are positive:
+
+```
+(define (mul-interval x y)
+    (make-interval (* (upper-bound x) (upper-bound y))
+                   (* (lower-bound x) (lower-bound y))
+)
+```
+
+which approximately equals to:
+
+```
+(define (mul-interval x y)
+    (make-center-percent (* (center x) (center y))
+                   (* (percent x) (percent y))
+)
+```
+
+----
+
+Lem is so blunt.
+
+```
+> (define r1 (make-interval 3 0.25))
+> (define r2 (make-interval 5 0.1))
+> (par1 r1 r2)
+'(0.003125 . 42.85714285714286)
+> (par2 r1 r2)
+'(0.07142857142857142 . 1.875)
+
+```
+
+### 2.14
+
+``````````
+``````````
+
+## 2.2
+
+Finally, it comes to some familar topic.
+
+> In general, an operation for combining data objects satisfies the closure property if the results of combining things with that operation can themselves be combined using the same operation.
+
+So, this is the true definition of closure. It's about hierarchical.
+
+### 2.17
+
+```
+(define (last-pair p)
+	(define (aux p e)
+		(if (null? p)
+			e
+			(aux (cdr p) (car p))
+		)
+	)
+	(aux p null)
+)
+```
+
+### 2.18
+
+```
+(define (reverse l)
+	(define (aux remain r)
+		(if (null? remain)
+			r
+			(aux (cdr remain) (cons (car remain) r))
+		)
+	)
+	(aux l null)
+)
+```
+
+### 2.19
+
+```
+(define (first-denomination c)
+	(car c)
+)
+
+(define (except-first-denomination c)
+	(cdr c)
+)
+
+(define no-more? null?)
+```
+
+The order of the list coin-values  doesn't affect the answer produced by cc.
+
+Every possibility will be tested, no one would escape.
+
+### 2.20
+
+```
+(define (same-parity f . l)
+	(define (aux remain parity)
+		(if (null? remain)
+			null
+			(if (= parity (modulo (car remain) 2))
+			(cons (car remain) (aux (cdr remain) parity))
+			(aux (cdr remain) parity)
+		)
+		)
+	)
+	(aux (cons f l) (modulo f 2))
 )
 ```
 
