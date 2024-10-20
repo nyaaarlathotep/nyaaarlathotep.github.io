@@ -455,3 +455,47 @@ Every possibility will be tested, no one would escape.
 )
 ```
 
+### 2.21
+
+```
+ (define (square-list items)
+ (if (null? items)
+ nil
+ (cons (square (car items)) (square-list (cdr items)))))
+
+```
+
+```
+ (define (square-list items)
+ (map queare items))
+```
+
+### 2.22
+
+This is a classic problem of tail recursion with lists. In the first attempt, the last element is `cons`ed to the result first, so the result is reversed. In the second attempt, `cons`ing a list to an element does not create a normal list.
+
+### 2.23
+
+How to throw a useless return value of a function in Scheme? Or let the procedure continue to run.
+
+```
+(define (for-each f l)
+    (
+        (if (null? l)
+            '()
+            (cons (f (car l )) (for-each f (cdr l)))
+        )
+    )
+)
+```
+
+I'd use `begin`.
+
+> ```
+> (define (for-each p lst)
+>     (if (not (null? lst))
+>         (begin
+>             (p (car lst))
+>             (for-each p (cdr lst)))))
+> ```
+
