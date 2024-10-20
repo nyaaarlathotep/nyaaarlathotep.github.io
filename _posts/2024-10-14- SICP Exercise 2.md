@@ -562,3 +562,65 @@ Come on.
 )
 ```
 
+### 2.29
+
+a.
+
+```
+(define (left-branch  b)
+    (car b)
+)
+
+(define (right-branch  b)
+    (car (cdr b))
+)
+
+(define (branch-length b)
+    (car b)
+)
+
+(define (branch-structure b)
+    (car (cdr b))
+)
+```
+
+b.
+
+```
+
+(define (total-weight b)
+    (define (weight s)
+        (if (list? s)
+            (total-weight s)
+            s
+        )
+    )
+    (+ (weight (left-branch b)) (weight (right-branch b)))
+)
+```
+
+c.
+
+`(and (balanced left) (balanced right) (equal torque))`
+
+```
+(define (balanced b)
+    (define (balanced-branch br)
+        (if (list? (branch-structure br))
+            (balanced (branch-structure))
+            true
+        )
+    )
+    (and
+        (= (* (weight (left-branch b)) (branch-length (left-branch b))) (* (weight (right-branch b)) (branch-length (right-branch b))))
+        (balanced-branch (left-branch b))
+        (balanced-branch (right-branch b))
+    )
+)
+```
+
+d.
+
+A little. Maybe more than a little, cause  the branch hanging prediction needs to be changed.
+
+Anyway, `list a b` is `cons a (list b)`
