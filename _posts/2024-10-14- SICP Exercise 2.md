@@ -499,3 +499,66 @@ I'd use `begin`.
 >             (for-each p (cdr lst)))))
 > ```
 
+### 2.24
+
+```
+> (list
+   1 (list 2 (list 3 4)))
+'(1 (2 (3 4)))
+```
+
+How do I draw a tree?
+
+![2.24](/images/sicp/image-20241020202027664.png)
+
+### 2.25
+
+```
+> (car (cdr (car (cdr (cdr '(1 3 (5 7) 9))))))
+7
+> (car (car '((7))))
+7
+> (car (cdr (car (cdr (car (cdr (car (cdr (car (cdr (car (cdr '(1 (2 (3 (4 (5 (6 7))))))))))))))))))
+7
+```
+
+Come on.
+
+### 2.26
+
+```
+>  (append x y)
+'(1 2 3 4 5 6)
+>  (cons x y)
+'((1 2 3) 4 5 6)
+>  (list x y)
+'((1 2 3) (4 5 6))
+```
+
+### 2.27
+
+```
+(define (deep-reverse l)
+    (define (aux remain r)
+        (cond 
+            ((null? remain) r)
+            ((pair? (car remain)) (aux (cdr remain) (cons (deep-reverse (car remain)) r)))
+            (else (aux (cdr remain) (cons (car remain) r)))
+        )
+    )
+    (aux l null)
+)
+```
+
+### 2.28
+
+```
+(define (fringe t)
+    (cond
+        ((null? t) null)
+        ((list? t) (append (fringe (car t)) (fringe (cdr t))))
+        (else (list t))
+    )
+)
+```
+
