@@ -624,3 +624,46 @@ d.
 A little. Maybe more than a little, cause  the branch hanging prediction needs to be changed.
 
 Anyway, `list a b` is `cons a (list b)`
+
+### 2.30
+
+```
+(define (square-tree tree)
+ (cond ((null? tree) null)
+ ((not (pair? tree)) (* tree tree))
+ (else (cons (square-tree (car tree))
+ (square-tree (cdr tree))))))
+```
+
+```
+(define (square-tree tree)
+ (map (lambda (sub-tree)
+ (if (pair? sub-tree)
+ (square-tree sub-tree)
+ (* sub-tree sub-tree)))
+ tree))
+```
+
+### 2.31
+
+```
+(define (tree-map f tree)
+    (map 
+    (lambda (sub-tree)
+    (if (pair? sub-tree)
+    (tree-map f sub-tree)
+    (f sub-tree))) 
+    tree)
+)
+```
+
+### 2.32
+
+```
+ (define (subsets s)
+ (if (null? s)
+ null
+ (let ((rest (subsets (cdr s))))
+ (append rest (map (lambda (poss) (cons (car s) poss)) rest)))))
+```
+
