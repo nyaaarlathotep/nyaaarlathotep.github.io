@@ -667,3 +667,31 @@ Anyway, `list a b` is `cons a (list b)`
  (append rest (map (lambda (poss) (cons (car s) poss)) rest)))))
 ```
 
+### 2.33
+
+```
+(define (accumulate op initial sequence)
+ (if (null? sequence)
+ initial
+ (op (car sequence)
+ (accumulate op initial (cdr sequence)))))
+```
+
+```
+ (define (map p sequence)
+ (accumulate (lambda (x y) (cons (p x) y)) null sequence))
+ (define (append seq1 seq2)
+ (accumulate cons seq1 seq2))
+ (define (length sequence)
+ (accumulate (lambda (x y) (add1 x)) 0 sequence))
+```
+
+Ok, there's a little difference.
+
+> ```
+> (define (append seq1 seq2)
+>     (accumulate cons seq2 seq1))
+> ```
+
+### 2.34
+
