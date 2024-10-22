@@ -805,3 +805,50 @@ So the `accumulate` is designed for matrices, and they fit each other perfectly.
  (map (lambda (v) (matrix-*-vector cols v)) m)))
 ```
 
+### 2.38
+
+```
+(define (fold-right op initial sequence)
+ (if (null? sequence)
+ initial
+ (op (car sequence)
+ (fold-right op initial (cdr sequence)))))
+```
+
+```
+(define (fold-left op initial sequence)
+ (define (iter result rest)
+ (if (null? rest)
+ result
+ (iter (op result (car rest))
+ (cdr rest))))
+ (iter initial sequence))
+```
+
+Obviously, `fold-left` is tail-recursive. We'd use it more.
+
+Which remind me of OCaml, although this must be earlier.
+
+```
+>  (fold-left list null (list 1 2 3))
+'(((() 1) 2) 3)
+>  (fold-right list null (list 1 2 3))
+'(1 (2 (3 ())))
+```
+
+The last two examples demonstrated clearly: Only when the exchange rule is permitted in the operation could these two functions work the same.
+
+Oh, `associative law` or `monoid`, maybe `semigroup`?
+
+### 2.39
+
+```
+(define (reverse sequence)
+ (fold-right (lambda (x y) (append y (list x))) nil sequence))
+```
+
+```
+(define (reverse sequence)
+ (fold-left (lambda (x y) (cons y x)) nil sequence))
+```
+
