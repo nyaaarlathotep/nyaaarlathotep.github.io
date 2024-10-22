@@ -683,15 +683,125 @@ Anyway, `list a b` is `cons a (list b)`
  (define (append seq1 seq2)
  (accumulate cons seq1 seq2))
  (define (length sequence)
- (accumulate (lambda (x y) (add1 x)) 0 sequence))
+ (accumulate (lambda (x y) (add1 y)) 0 sequence))
 ```
 
 Ok, there's a little difference.
+
+My result:
+
+```
+> (append '(1 2 3) '(4 5 6))
+'(4 5 6 1 2 3)
+```
 
 > ```
 > (define (append seq1 seq2)
 >     (accumulate cons seq2 seq1))
 > ```
 
+> ```
+> > (append '(1 2 3) '(4 5 6))
+> '(1 2 3 4 5 6)
+> ```
+
 ### 2.34
+
+The initial number is zero, which multiplied by x equals zero. Thus it can be used as the initial number.
+
+`(list 1 3 0 5 0 1)` -> `1 + 3x + 5x^3 + x^5`.
+
+This is `(+ (* (3 + 5x^2 + x^4) x) 1))` -> `(+ (* higher-terms x) this-coeff))`, as `thisCoeff` is the initial number.
+
+......
+
+```
+ (define (horner-eval x coefficient-sequence)
+ (accumulate (lambda (this-coeff higher-terms) (+ (* higher-terms x) this-coeff))
+ 0
+ coefficient-sequence))
+```
+
+### 2.35
+
+map? Ok, use itself.
+
+```
+ (define (count-leaves t)
+ (accumulate + 0 (map 
+ (lambda (tree)
+ 	(if (pair? tree)
+ 		(count-leaves tree)
+ 		1
+ 	)
+ ) t)))
+```
+
+### 2.36
+
+Abstraction!
+
+```
+(define (accumulate-n op init seqs)
+ (if (null? (car seqs))
+ null
+ (cons (accumulate op init 
+    (accumulate (lambda (x y) (cons (car x) y)) null seqs)
+ )
+ (accumulate-n op init 
+    (accumulate (lambda (x y) (cons (cdr x) y)) null seqs)
+ ))))
+```
+
+```
+> (accumulate (lambda (x y) (cons (car x) y)) null '((1 2 3) (4 5 6) (7 8 9) (10 11 12)))
+'(1 4 7 10)
+> (accumulate (lambda (x y) (cons (cdr x) y)) null '((1 2 3) (4 5 6) (7 8 9) (10 11 12)))
+'((2 3) (5 6) (8 9) (11 12))
+```
+
+```
+> (accumulate-n + 0 '((1 2 3) (4 5 6) (7 8 9) (10 11 12)))
+'(22 26 30)
+```
+
+There's an alternative solution, nevermind.
+
+> ```
+> (define (car-n seqs)
+>     (map car seqs))
+> (define (cdr-n seqs)
+>     (map cdr seqs))
+> 
+> (define (accumulate-n op init seqs)
+>     (if (null? (car seqs))
+>         '()
+>         (cons (accumulate op init (car-n seqs))
+>               (accumulate-n op init (cdr-n seqs)))))
+> ```
+
+### 2.37
+
+So the `accumulate` is designed for matrices, and they fit each other perfectly.
+
+```
+(define (dot-product v w)
+ (accumulate + 0 (map * v w)))
+```
+
+```
+(define (matrix-*-vector m v)
+ (map (lambda (w) (dot-product v w)) m))
+```
+
+```
+(define (transpose mat)
+ (accumulate-n cons null mat))
+```
+
+```
+(define (matrix-*-matrix m n)
+ (let ((cols (transpose n)))
+ (map (lambda (v) (matrix-*-vector cols v)) m)))
+```
 
