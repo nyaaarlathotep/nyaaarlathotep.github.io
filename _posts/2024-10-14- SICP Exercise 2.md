@@ -1048,7 +1048,7 @@ Louis exchanged the order of generating all possibilities and checking  safety, 
 >
 > 因此， Louis 的 `queens` 函数的运行速度大约是原来 `queens` 函数的 `board-size` 倍，也即是 `T * board-size` 。
 
-Really? Their speed of producing the same board-size is different.
+Really? Their speed of producing the (n-1) board-size is different.
 
 > [thongpv87](http://community.schemewiki.org/?thongpv87)
 >
@@ -1057,3 +1057,44 @@ Really? Their speed of producing the same board-size is different.
 https://wernerdegroot.wordpress.com/2015/08/01/sicp-exercise-2-43/
 
 LOL. I need a standard solution.
+
+### 2.44
+
+```
+(define (right-split painter n)
+  (if (= n 0)
+      painter
+      (let ((smaller (right-split painter 
+                                  (- n 1))))
+        (beside painter 
+                (below smaller smaller)))))
+```
+
+```
+(define (up-split painter n)
+  (if (= n 0)
+      painter
+      (let ((smaller (right-split painter 
+                                  (- n 1))))
+        (below painter 
+                (beside smaller smaller)))))
+```
+
+### 2.45
+
+```
+(define (split one two)
+	(define (aux painter n)
+		  (if (= n 0)
+      		painter
+      		(let ((smaller (aux painter 
+                                  (- n 1))))
+        		(one painter 
+                		(two smaller smaller)))))
+	)
+	(lambda (painter n)
+		(aux painter n)
+	)
+)
+```
+
