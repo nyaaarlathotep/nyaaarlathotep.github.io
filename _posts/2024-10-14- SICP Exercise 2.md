@@ -838,7 +838,7 @@ Which remind me of OCaml, although this must be earlier.
 
 The last two examples demonstrated clearly: Only when the exchange rule is permitted in the operation could these two functions work the same.
 
-Oh, `associative law` or `monoid`, maybe `semigroup`?
+Oh, `associative law` or `monoid`( maybe more exactly: `semigroup`).
 
 ### 2.39
 
@@ -850,5 +850,307 @@ Oh, `associative law` or `monoid`, maybe `semigroup`?
 ```
 (define (reverse sequence)
  (fold-left (lambda (x y) (cons y x)) nil sequence))
+```
+
+### 2.40
+
+```
+(define (flatmap proc seq)
+  (accumulate append nil (map proc seq)))
+```
+
+```
+(define (unique-pairs n)
+	(flatmap (lambda (i)
+          (map (lambda (j) 
+                 (list i j))
+               (enumerate-interval 1 (- i 1))))
+        (enumerate-interval 1 n))
+)
+```
+
+### 2.41
+
+distinct positive integers.
+
+```
+(define (three-sum n s)
+	(map
+		(lambda (pair)
+			(cons (- s (+ (car pair) (cadr pair))) pair)
+		)
+		(filter 
+			(lambda (pair) (< (+ (car pair) (cadr pair)) s ))
+        	(unique-pairs n)
+		)
+	)
+)
+```
+
+This one above produces some duplicate answers.
+
+Just another brainless one.
+
+```
+(define (unique-three n)
+	(flatmap (lambda (i)
+          (flatmap (lambda (j) 
+                 (map (lambda (k)
+                 	(list i j k)
+                 )
+                 (enumerate-interval 1 (- j 1))
+                 )
+                 )
+               (enumerate-interval 1 (- i 1))))
+        (enumerate-interval 1 n))
+)
+```
+
+```
+(define (three-sum n s)
+	(filter
+		(lambda (l) (= (+ (car l)  (car (cdr l))  (car (cdr (cdr l))))  s))
+        (unique-three n)
+	)
+)
+```
+
+OK, then. We need more abstactions.
+
+```
+(define (triple-sum-equal-to? sum triple)
+    (= sum
+       (+ (car triple)
+          (cadr triple)
+          (caddr triple))))
+```
+
+```
+(define (triple-sum-equal-to? sum triple)
+    (= sum
+       (fold-right + 0 triple)))
+```
+
+### 2.42
+
+Here comes the old friend.
+
+`adjoin-position` simply add all the possible places for the queen to the rest of queens places.
+
+```
+(define (adjoin-position r c rest-of-queens)
+	(cons (list r c) rest-of-queens)
+)
+```
+
+```
+(define empty-board null)
+```
+
+`(= a-c b-c)` will never break. Never mind.
+
+```
+(define (cross a b)
+	(let ((a-r (car a)) (a-c (cadr a)) (b-r (car b)) (b-c (cadr b)))
+		(if (or (= a-r b-r) (= a-c b-c))
+			#t
+			(if (= (abs (- a-r b-r)) (abs (- a-c b-c)))
+				#t
+				#f
+			)
+	    )
+    )
+)
+```
+
+```
+(define (safe? k positions)
+	(if (< (length positions) 2)
+		#t
+		(let ((new-queen (car positions)))
+		(define (aux rest)
+			(if (null? rest)
+				#t
+				(if (cross new-queen (car rest))
+					#f
+					(aux (cdr rest))
+			)
+			)
+
+		)
+		(aux (cdr positions))
+		)
+	)
+)
+```
+
+The K in parameter is useless. Why?
+
+```
+(define (queens board-size)
+  (define (queen-cols k)
+    (if (= k 0)
+        (list empty-board)
+        (filter
+         (lambda (positions) 
+           (safe? k positions))
+         (flatmap
+          (lambda (rest-of-queens)
+            (map (lambda (new-row)
+                   (adjoin-position 
+                    new-row 
+                    k 
+                    rest-of-queens))
+                 (enumerate-interval 
+                  1 
+                  board-size)))
+          (queen-cols (- k 1))))))
+  (queen-cols board-size))
+```
+
+OK.
+
+> ```
+> (define (adjoin-position new-row k rest-of-queens)
+>     (cons new-row rest-of-queens))
+> ```
+>
+> ```
+> (define (safe? k position)
+>     (iter-check (car position) 
+>                 (cdr position)
+>                  1))
+> 
+> (define (iter-check row-of-new-queen rest-of-queens i)
+>     (if (null? rest-of-queens)  ; 下方所有皇后检查完毕，新皇后安全
+>         #t
+>         (let ((row-of-current-queen (car rest-of-queens)))
+>             (if (or (= row-of-new-queen row-of-current-queen)           ; 行碰撞
+>                     (= row-of-new-queen (+ i row-of-current-queen))     ; 右下方碰撞
+>                     (= row-of-new-queen (- row-of-current-queen i)))    ; 左下方碰撞
+>                 #f
+>                 (iter-check row-of-new-queen 
+>                             (cdr rest-of-queens)    ; 继续检查剩余的皇后
+>                             (+ i 1))))))            ; 更新步进值
+> ```
+
+### 2.43
+
+> Louis Reasoner is having a terrible time doing Exercise 2.42.
+
+Well, actually terrible.
+
+Louis exchanged the order of generating all possibilities and checking  safety, such as generating all the placement possibilities for all the queens and then checking them, while our procedure will check the safety when placing each new queen.
+
+> 练习 2.42 的 `queens` 函数对于每个棋盘 `(queen-cols k)` ，使用 `enumerate-interval` 产生 `board-size` 个棋盘。
+>
+> 而 Louis 的 `queens` 函数对于 `(enumerate-interval 1 board-size)` 的每个 `k` ，都要产生 `(queen-cols (- k 1))` 个棋盘。
+>
+> 因此， Louis 的 `queens` 函数的运行速度大约是原来 `queens` 函数的 `board-size` 倍，也即是 `T * board-size` 。
+
+Really? Their speed of producing the (n-1) board-size is different.
+
+> [thongpv87](http://community.schemewiki.org/?thongpv87)
+>
+> @aQuaYi I don't think it is correct because number of queen-cols also change over time
+
+https://wernerdegroot.wordpress.com/2015/08/01/sicp-exercise-2-43/
+
+LOL. I need a standard solution.
+
+### 2.44
+
+```
+(define (right-split painter n)
+  (if (= n 0)
+      painter
+      (let ((smaller (right-split painter 
+                                  (- n 1))))
+        (beside painter 
+                (below smaller smaller)))))
+```
+
+```
+(define (up-split painter n)
+  (if (= n 0)
+      painter
+      (let ((smaller (right-split painter 
+                                  (- n 1))))
+        (below painter 
+                (beside smaller smaller)))))
+```
+
+### 2.45
+
+```
+(define (split one two)
+	(define (aux painter n)
+		  (if (= n 0)
+      		painter
+      		(let ((smaller (aux painter 
+                                  (- n 1))))
+        		(one painter 
+                		(two smaller smaller)))))
+	)
+	(lambda (painter n)
+		(aux painter n)
+	)
+)
+```
+
+Oh, there's no need for another lambda.
+
+> ```
+> (define (split big-combiner small-combiner)
+>     (define (inner painter n)
+>         (if (= n 0)
+>             painter
+>             (let ((smaller (inner painter (- n 1))))
+>                 (big-combiner painter   
+>                               (small-combiner smaller smaller)))))
+>     inner)
+> ```
+
+### 2.46
+
+```
+(define make-vect cons)
+```
+
+```
+(define xcor-vect car)
+```
+
+```
+(define (ycor-vect v)
+	(car (cdr v))
+)
+```
+
+```
+(define (add-vect v1 v2)
+	(make-vect
+		(+ (xcor-vect v1) (xcor-vect v2))
+		(+ (ycor-vect v1) (ycor-vect v2))
+	)
+)
+```
+
+```
+(define (sub-vect v1 v2)
+	(make-vect
+		(- (xcor-vect v1) (xcor-vect v2))
+		(- (ycor-vect v1) (ycor-vect v2))
+	)
+)
+```
+
+```
+(define (scale-vect n v)
+	(make-vect
+		(* (xcor-vect v) n)
+		(* (ycor-vect v) n)
+	)
+)
 ```
 
