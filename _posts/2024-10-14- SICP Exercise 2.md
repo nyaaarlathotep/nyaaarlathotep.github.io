@@ -1098,3 +1098,59 @@ LOL. I need a standard solution.
 )
 ```
 
+Oh, there's no need for another lambda.
+
+> ```
+> (define (split big-combiner small-combiner)
+>     (define (inner painter n)
+>         (if (= n 0)
+>             painter
+>             (let ((smaller (inner painter (- n 1))))
+>                 (big-combiner painter   
+>                               (small-combiner smaller smaller)))))
+>     inner)
+> ```
+
+### 2.46
+
+```
+(define make-vect cons)
+```
+
+```
+(define xcor-vect car)
+```
+
+```
+(define (ycor-vect v)
+	(car (cdr v))
+)
+```
+
+```
+(define (add-vect v1 v2)
+	(make-vect
+		(+ (xcor-vect v1) (xcor-vect v2))
+		(+ (ycor-vect v1) (ycor-vect v2))
+	)
+)
+```
+
+```
+(define (sub-vect v1 v2)
+	(make-vect
+		(- (xcor-vect v1) (xcor-vect v2))
+		(- (ycor-vect v1) (ycor-vect v2))
+	)
+)
+```
+
+```
+(define (scale-vect n v)
+	(make-vect
+		(* (xcor-vect v) n)
+		(* (ycor-vect v) n)
+	)
+)
+```
+
