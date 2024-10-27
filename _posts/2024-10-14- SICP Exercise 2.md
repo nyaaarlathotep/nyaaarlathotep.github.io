@@ -1123,7 +1123,7 @@ Oh, there's no need for another lambda.
 
 ```
 (define (ycor-vect v)
-	(car (cdr v))
+	(cdr v)
 )
 ```
 
@@ -1153,4 +1153,159 @@ Oh, there's no need for another lambda.
 	)
 )
 ```
+
+### 2.47
+
+```
+(define (make-frame origin edge1 edge2)
+ (list origin edge1 edge2))
+(define (origin frame)
+	(car frame)
+)
+(define (edge1 frame)
+	(car (cdr frame))
+)
+
+(define (edge2 frame)
+	(car (cdr (cdr frame)))
+)
+```
+
+```
+(define (make-frame origin edge1 edge2)
+ (cons origin (cons edge1 edge2)))
+ 
+(define (origin frame)
+	(car frame)
+)
+(define (edge1 frame)
+	(car (cdr frame))
+)
+
+(define (edge2 frame)
+	(cdr (cdr frame))
+)
+```
+
+### 2.48
+
+```
+(define (make-segment v1 v2)
+	(cons v1 v2)
+)
+(define start-segment
+	car
+)
+(define end-segment
+	cdr
+)
+```
+
+### 2.49
+
+a. 
+
+How to select edges of a frame?
+
+All the solutions I find are not proper. The book means vector graph, you know?
+
+```
+(define (segments->painter segment-list)
+ (lambda (frame)
+ (for-each
+ (lambda (segment)
+ (draw-line
+ ((frame-coord-map frame)
+ (start-segment segment))
+ ((frame-coord-map frame)
+ (end-segment segment))))
+ segment-list)))
+```
+
+```
+(define (outline frame)
+	(let ((outlines (list 
+		(make-segment (origin frame) (add-vect (origin frame) (edge1 frame)) ) 
+		(make-segment (origin frame) (add-vect (origin frame) (edge2 frame)) ) 
+		(make-segment (add-vect (origin frame) (edge2 frame)) (add-vect (add-vect (origin frame) (edge2 frame)) (edge1 frame)) ) 
+		(make-segment (add-vect (origin frame) (edge1 frame)) (add-vect (add-vect (origin frame) (edge1 frame)) (edge2 frame)) )
+		)))
+		(segments->painter outlines)
+	)
+)
+```
+
+b.
+
+So, this is a problem about frame vectors transformation.
+
+```
+(define (top-left frame)
+	(add-vect (origin frame) (edge2 frame))
+)
+
+(define (top-right frame)
+	(add-vect (add-vect (origin frame) (edge2 frame)) (edge1 frame))
+)
+
+(define (bot-right frame)
+	(add-vect (origin frame) (edge1 frame))
+)
+
+(define bot-left origin)
+
+```
+
+```
+(define (draw-x frame)
+	(let ((outlines (list 
+		(make-segment (top-left frame) (bot-right frame))
+		(make-segment (bot-left frame) (top-right frame))
+		)))
+		(segments->painter outlines)
+	)
+)
+```
+
+c.
+
+```
+(define (left-mid frame)
+	(add-vect (origin frame) (scale-vect 0.5 (edge2 frame))
+)
+
+(define (top-mid frame)
+	(add-vect (add-vect (origin frame) (edge2 frame)) (scale-vect 0.5 (edge1 frame))
+)
+
+(define (right-mid frame)
+	(add-vect (add-vect (origin frame) (edge1 frame)) (scale-vect 0.5 (edge2 frame))
+)
+
+(define (bot-mid frame)
+	(add-vect (origin frame) (scale-vect 0.5 (edge1 frame))
+)
+
+```
+
+```
+(define (draw-x frame)
+	(let ((outlines (list 
+		(make-segment (left-mid frame) (top-mid frame))
+		(make-segment (top-mid frame) (right-mid frame))
+		(make-segment (right-mid frame) (bot-mid frame))
+		(make-segment (bot-mid frame) (left-mid frame))
+		)))
+		(segments->painter outlines)
+	)
+)
+```
+
+d.
+
+What the...
+
+I didn't find the definition of `wave`.
+
+### 2.50
 
