@@ -1386,3 +1386,72 @@ b.
 c.
 
 You need some rotations.
+
+### 2.53
+
+```
+Welcome to Racket v7.9 [bc].
+> (list 'a 'b 'c)
+'(a b c)
+>  (list (list 'george))
+'((george))
+>  (cdr '((x1 x2) (y1 y2)))
+'((y1 y2))
+>  (cadr '((x1 x2) (y1 y2)))
+'(y1 y2)
+>  (pair? (car '(a short list)))
+#f
+>  (memq 'red '((red shoes) (blue socks)))
+#f
+>  (memq 'red '(red shoes blue socks))
+'(red shoes blue socks)
+```
+
+```
+>  (cadr '((x1 x2) (y1 y2)))
+'(y1 y2)
+```
+
+The bracket in quotaiton still makes sense.
+
+### 2.54
+
+```
+(define (equal? a b)
+    (cond
+        ((number? a) (and (number? b) (eq? a b)))
+        ((number? b) (and (number? a) (eq? a b)))
+        ((null? a) (null? b))
+        ((null? b) (null? a))
+        ((and (number? (car a)) (number? (car b))) (and (eq? (car a) (car b)) (equal? (cdr a) (cdr b))))
+        ((and (list? (car a)) (list? (car b))) (and (equal? (car a) (car b)) (equal? (cdr a) (cdr b))))
+        (else false)
+    )
+)
+```
+
+### 2.55
+
+Confusing...
+
+`'abracadabra` -> `(quote abracadabra)` -> abracadabra itself, which is not a list.
+
+```
+> (car 'abracadabra)
+; car: contract violation
+;   expected: pair?
+;   given: 'abracadabra
+; [,bt for context]
+```
+
+`''abracadabra` -> `(quote (quote abracadabra))` 
+
+So we also would see that element in the list is not evaluated at once.
+
+```
+> (cdr ''abracadabra)
+'(abracadabra)
+> (car ''abracadabra)
+'quote
+```
+
