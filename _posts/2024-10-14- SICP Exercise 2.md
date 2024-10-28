@@ -14,6 +14,8 @@ The abstraction of data lead to the interface of the data.
 
 Church numerals...
 
+> Each level is constructed by combining parts that are regarded as primitive at that level, and the parts constructed at each level are used as primitives at the next level. The language used at each level of a stratified design has primitives, means of combination, and means of abstraction appropriate to that level of detail.
+
 ## 2.1
 
 ### 2.1
@@ -1309,3 +1311,78 @@ I didn't find the definition of `wave`.
 
 ### 2.50
 
+```
+(define (flip-horiz painter)
+ (transform-painter painter
+ (make-vect 1.0 0.0) 
+ (make-vect 0.0 0.0) 
+ (make-vect 1.0 1.0))) 
+```
+
+```
+(define (rotate90 painter)
+ (transform-painter painter
+ (make-vect 1.0 1.0)
+ (make-vect 0.0 1.0)
+ (make-vect 1.0 0.0)))
+```
+
+```
+(define (rotate270 painter)
+ (transform-painter painter
+ (make-vect 0.0 1.0)
+ (make-vect 0.0 0.0)
+ (make-vect 1.0 1.0)))
+```
+
+### 2.51
+
+```
+(define (below painter1 painter2)
+ (let ((split-point (make-vect 0.0 0.5)))
+ (let ((paint-bot
+ painter1
+ (transform-painter
+ (make-vect 0.0 0.0)
+ (make-vect 1.0 0.0)
+ split-point
+ ))
+ (paint-top
+ (transform-painter
+ painter2
+ split-point
+ (make-vect 1.0 0.5)
+ (make-vect 0.0 1.0))))
+ (lambda (frame)
+ (paint-bot frame)
+ (paint-top frame)))))
+```
+
+```
+(define (below painter1 painter2)
+	(lambda (frame)
+		(rotate270 (beside (rotate90 paint1) (rotate90 paint2))	)
+	)
+)
+```
+
+### 2.52
+
+b.
+
+```
+ (define (corner-split painter n)
+ (if (= n 0)
+ painter
+ (let ((up (up-split painter (- n 1)))
+ (right (right-split painter (- n 1))))
+ (let ((top-left up)
+ (bottom-right right)
+ (corner (corner-split painter (- n 1))))
+ (beside (below painter top-left)
+ (below bottom-right corner))))))
+```
+
+c.
+
+You need some rotations.
