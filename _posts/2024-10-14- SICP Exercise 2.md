@@ -1524,3 +1524,70 @@ However.
 0
 ```
 
+### 2.57
+
+How to represent scalable param?
+
+Oh, we don't need rewrite `make-sum` and `make-product`, our params are always legal.
+
+```
+(define (augend s)
+    (if (> (length s) 3)
+        (cons '+ (cddr s))
+        (caddr s)
+    )
+)
+
+(define (multiplicand p)
+    (if (> (length s) 3)
+        (cons '* (cddr s))
+        (caddr s)
+    )
+)
+```
+
+```
+> (deriv '(* x y (+ x 3)) 'x)
+'(+ (* x y) (* y (+ x 3)))
+```
+
+### 2.58
+
+a.
+
+Because of the abstraction barrier, there is no need to modify `deriv`.
+
+```
+(define (make-sum a1 a2)
+ (cond ((=number? a1 0) a2)
+ ((=number? a2 0) a1)
+ ((and (number? a1) (number? a2))
+ (+ a1 a2))
+ (else (list a1 '+ a2))))
+ 
+(define (sum? x) (and (pair? x) (eq? (cadr x) '+)))
+
+(define (addend s) (car s))
+(define (augend s) (caddr s))
+
+(define (make-product m1 m2)
+ (cond ((or (=number? m1 0) (=number? m2 0)) 0)
+ ((=number? m1 1) m2)
+ ((=number? m2 1) m1)
+ ((and (number? m1) (number? m2)) (* m1 m2))
+ (else (list m1 '* m2))))
+ 
+(define (product? x) (and (pair? x) (eq? (cadr x) '*)))
+
+(define (multiplier p) (car p))
+(define (multiplicand p) (caddr p))
+```
+
+```
+> (deriv '(x + (3 * (x + ( y + 2 )))) 'x)
+4
+```
+
+b.
+
+We need more bracket. We need context to know if we could execute the numbers so far. 
