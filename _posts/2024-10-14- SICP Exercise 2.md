@@ -1414,6 +1414,8 @@ Welcome to Racket v7.9 [bc].
 
 The bracket in quotaiton still makes sense.
 
+## 2.3
+
 ### 2.54
 
 ```
@@ -1453,5 +1455,72 @@ So we also would see that element in the list is not evaluated at once.
 '(abracadabra)
 > (car ''abracadabra)
 'quote
+```
+
+### 2.56
+
+I'm about to ask this question.
+
+```
+
+(define (deriv exp var)
+ (cond ((number? exp) 0)
+ ((variable? exp) (if (same-variable? exp var) 1 0))
+ ((sum? exp) (make-sum (deriv (addend exp) var)
+ (deriv (augend exp) var)))
+ ((product? exp)
+ (make-sum
+ (make-product (multiplier exp)
+ (deriv (multiplicand exp) var))
+ (make-product (deriv (multiplier exp) var)
+ (multiplicand exp))))
+ ((exponentiation? exp)
+    (make-product 
+        (make-product (exponent exp) (make-exponentiation (base exp) (make-sum (exponent exp) -1))) 
+        (deriv (base exp) var)
+    )
+ )
+ (else
+ (error "unknown expression type: DERIV" exp))))
+
+
+(define (exponentiation? s)
+    (and (pair? s) (eq? (car s) '**))
+)
+
+(define (base s)
+    (cadr s)
+)
+
+(define (exponent s)
+    (caddr s)
+)
+
+(define (make-exponentiation m1 m2)
+ (cond
+ ((=number? m1 0) 0)
+ ((=number? m1 1) 1)
+ ((=number? m2 1) m1)
+ ((=number? m2 0) 1)
+ ((and (number? m1) (number? m2)) (expt m1 m2))
+ (else (list '** m1 m2))))
+```
+
+```
+> (deriv (make-exponentiation 'x 1) 'x)
+1
+> (deriv (make-exponentiation 'x 2) 'x)
+'(* 2 x)
+> (deriv (make-exponentiation 'x 3) 'x)
+'(* 3 (** x 2))
+> (deriv (make-exponentiation 'x 4) 'x)
+'(* 4 (** x 3))
+```
+
+However.
+
+```
+> (deriv (make-exponentiation 2 'x) 'x)
+0
 ```
 
