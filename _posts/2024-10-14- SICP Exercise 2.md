@@ -1631,3 +1631,50 @@ We are waiting for the heap, right?
 )
 ```
 
+### 2.61
+
+```
+(define (adjoin-set x set)
+	(cond
+    	((null? set) (list x))
+        ( (= (car set) x) set )
+		( (> (car set) x) (cons x set) )
+		(else (cons x (adjoin-set x (cdr set)) ))
+	)
+)
+```
+
+LOL.
+
+> ```
+> (define (adjoin-set x set)
+>     (union-set (list x) set))
+> ```
+
+### 2.62
+
+The pattern is like `intersection-set`.
+
+```
+(define (union-set set1 set2)
+  (if (or (null? set1) (null? set2))
+      '()
+      (let ((x1 (car set1)) (x2 (car set2)))
+        (cond ((= x1 x2)
+               (cons x1 (union-set 
+                         (cdr set1)
+                         (cdr set2))))
+              ((< x1 x2) 
+               (cons x1 (union-set 
+                          (cdr set1) 
+                          set2)))
+              ((< x2 x1) 
+              	(consx x2 (union-set 
+                          set1 
+                          (cdr set2))))
+        )
+      )
+  )
+)
+```
+
