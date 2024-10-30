@@ -1678,3 +1678,46 @@ The pattern is like `intersection-set`.
 )
 ```
 
+### 2.63
+
+It seems both two have the same order: left -> mid -> right.
+
+1. (1 2 3 4 5 6 7)
+2. Obviously, the second one is better. It doesn't use `append`.
+
+> `tree->list-1` 的复杂度为 Θ(*n*^2) 。
+>
+> `tree->list-2` 的复杂度为 Θ(*n*) 。
+
+### 2.64
+
+1. It utilizes the power of recursion. The function partitions the entire  list into three parts: left-tree, this entry, and right-tree, and  recursively calls the function with the designated number of elements to construct the sub-trees until there's only one element left of no element left. Then the tree is itself. Surprisingly, it doesn't consume extra memory. Once the function constructs a new tree, it `cons`es the tree to the head of the given elements' list and return it. So the caller can use it directly. The result:
+
+   ```
+   > (quotient (- 6 1) 2)
+   2
+   
+   ```
+
+   ![tree](/images/tree2.jpg)
+
+2. O(n)
+
+### 2.65
+
+I copied the answers which are dumb. The problem is too tedious, surly it has more efficient answers.
+
+```
+(define (intersection-tree tree another)
+    (list->tree
+        (intersection-set (tree->list-2 tree)
+                          (tree->list-2 another))))
+```
+
+```
+(define (union-tree tree another)
+    (list->tree
+        (union-set (tree->list-2 tree)
+                   (tree->list-2 another))))
+```
+
