@@ -1747,3 +1747,93 @@ Just like `element-of-set?`, right?
  (lookup given-key (right-branch set)))))
 ```
 
+### 2.67
+
+```
+> (decode sample-message sample-tree)
+'(A D A B B C A)
+```
+
+### 2.68
+
+```
+(define (decode bits tree)
+  (define (decode-1 bits current-branch)
+    (if (null? bits)
+        '()
+        (let ((next-branch
+               (choose-branch 
+                (car bits) 
+                current-branch)))
+          (if (leaf? next-branch)
+              (cons 
+               (symbol-leaf next-branch)
+               (decode-1 (cdr bits) tree))
+              (decode-1 (cdr bits) 
+                        next-branch)))))
+  (decode-1 bits tree))
+  
+(define (choose-branch bit branch)
+  (cond ((= bit 0) (left-branch branch))
+        ((= bit 1) (right-branch branch))
+        (else (error "bad bit: 
+               CHOOSE-BRANCH" bit))))
+```
+
+According to the decode, especially choose-branch, which implies that left is zero and right is 1.
+
+```
+(define (element-of-set? x set)
+  (cond ((null? set) false)
+        ((equal? x (car set)) true)
+        (else (element-of-set? x (cdr set)))))
+```
+
+```
+(define (encode-symbol s tree)
+    (define (aux code branch remain)
+        (cond
+            ((null? remain) code)
+            ((leaf? branch)	
+                (aux code tree (cdr remain))
+            )
+            ((element-of-set? (car remain) (symbols (left-branch branch)))
+                (aux (cons '0 code) (left-branch branch) remain)
+            )
+            ((element-of-set? (car remain) (symbols (right-branch branch)))
+                (aux (cons '1 code) (right-branch branch) remain)
+            )
+            (else (error "no branch!"))
+        )
+    )
+    (aux null tree s)
+)
+```
+
+```
+> (encode-symbol (decode sample-message sample-tree) sample-tree)
+'(0 1 1 1 0 1 0 1 0 0 1 1 0)
+> sample-message
+'(0 1 1 0 0 1 0 1 0 1 1 1 0)
+
+```
+
+### 2.69
+
+> You can take significant advantage of the fact that we are using an ordered set representation.) 
+
+The first two tree is the smallest two.
+
+```
+(define (successive-merge ordered-set)
+    (cond ((= 0 (length ordered-set))
+            '())
+          ((= 1 (length ordered-set))
+            (car ordered-set))
+          (else
+            (let ((new-sub-tree (make-code-tree (car ordered-set)
+                                                (cadr ordered-set)))
+                  (remained-ordered-set (cddr ordered-set)))
+                (successive-merge (adjoin-set new-sub-tree remained-ordered-set))))))
+```
+
