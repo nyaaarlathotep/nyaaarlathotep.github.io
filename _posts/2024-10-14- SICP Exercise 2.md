@@ -1721,3 +1721,29 @@ I copied the answers which are dumb. The problem is too tedious, surly it has mo
                    (tree->list-2 another))))
 ```
 
+### 2.66
+
+Just like `element-of-set?`, right?
+
+```
+(define (element-of-set? x set)
+ (cond ((null? set) false)
+ ((= x (entry set)) true)
+ ((< x (entry set))
+ (element-of-set? x (left-branch set)))
+ ((> x (entry set))
+ (element-of-set? x (right-branch set)))))
+```
+
+
+
+```
+(define (lookup given-key set)
+ (cond ((null? set) false)
+ ((equal? given-key (key (entry set))) (entry set))
+ ((< given-key (key (entry set)))
+ (lookup given-key (left-branch set)))
+ ((> given-key (key (entry set)))
+ (lookup given-key (right-branch set)))))
+```
+
