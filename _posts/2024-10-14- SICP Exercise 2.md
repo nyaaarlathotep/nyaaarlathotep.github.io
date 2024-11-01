@@ -16,6 +16,16 @@ Church numerals...
 
 > Each level is constructed by combining parts that are regarded as primitive at that level, and the parts constructed at each level are used as primitives at the next level. The language used at each level of a stratified design has primitives, means of combination, and means of abstraction appropriate to that level of detail.
 
+Generic interface as dispatching on type.
+
+>  One weakness is that the generic interface procedures (real-part, imag-part, magnitude, and angle) must know about all the different representations.
+>
+> Another weakness of the technique is that even though the individual representations can be designed separately, we must guarantee that no two procedures in the entire system have the same name.
+>
+> The issue underlying both of these weaknesses is that the technique for implementing generic interfaces is not additive. 
+
+
+
 ## 2.1
 
 ### 2.1
