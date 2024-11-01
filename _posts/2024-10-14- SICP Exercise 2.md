@@ -1837,3 +1837,25 @@ The first two tree is the smallest two.
                 (successive-merge (adjoin-set new-sub-tree remained-ordered-set))))))
 ```
 
+### 2.70
+
+Come on, caps! bro...
+
+```
+> (encode-symbol '(GET A JOB SHA NA NA NA NA NA NA NA NA GET A JOB SHA NA NA NA NA NA NA NA NA WAH YIP YIP YIP YIP YIP YIP YIP YIP YIP SHA BOOM) tree)
+
+'(1 1 0 1 1 0 1 1 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 0 1 1 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 0 1 1 1 1 0 0 1 1 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 0 1 1 1 1 0 0 1 1)
+```
+
+8 = 2^3. So we need 3 bits for every word, then `36*3 = 108`. More than 84 of Huffman tree. 
+
+### 2.71
+
+`1 + 2 + 4 +...+ 2^(n-1) < 2^n`, So the most frequent symbol only needs 1 bit to represent. And thus the lest frequent symbol needs `(n-1)` bits.
+
+### 2.72
+
+The general Huffman tree is supposed to be balanced, while the 2.71 example is most unbalanced.
+
+As the 2.71 described,  the most frequent: `1 * n -> O(n)`,  the lest frequent: `(n-1) * n -> O(n^2)`. But the least frequent won't appear that much cause it's the least frequent. Maybe that's why the general order of growth of Huffman is complicated.
+
