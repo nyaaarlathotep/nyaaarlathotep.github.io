@@ -1869,3 +1869,101 @@ The general Huffman tree is supposed to be balanced, while the 2.71 example is m
 
 As the 2.71 described,  the most frequent: `1 * n -> O(n)`,  the lest frequent: `(n-1) * n -> O(n^2)`. But the least frequent won't appear that much cause it's the least frequent. Maybe that's why the general order of growth of Huffman is complicated.
 
+### 2.73
+
+a.
+
+Because there's no tag, or operator.
+
+b.
+
+Could you just send the `exp` in? I must reimplement `multiplier`, `multiplicand` series again.
+
+```
+(define (install-deriv-package)
+ ;; internal procedures
+(define (make-sum a1 a2)
+ (cond ((=number? a1 0) a2)
+ ((=number? a2 0) a1)
+ ((and (number? a1) (number? a2))
+ (+ a1 a2))
+ (else (list '+ a1 a2))))
+(define (=number? exp num) (and (number? exp) (= exp num)))
+
+(define (make-product m1 m2)
+ (cond ((or (=number? m1 0) (=number? m2 0)) 0)
+ ((=number? m1 1) m2)
+ ((=number? m2 1) m1)
+ ((and (number? m1) (number? m2)) (* m1 m2))
+ (else (list '* m1 m2))))
+
+(define (sum? x) (and (pair? x) (eq? (car x) '+)))
+
+(define (addend s) (cadr s))
+
+ (define (augend s) (caddr s))
+
+ (define (product? x) (and (pair? x) (eq? (car x) '*)))
+
+ (define (multiplier p) (cadr p))
+
+ (define (multiplicand p) (caddr p))
+
+ (define (plus-deriv exp var)
+ (make-sum
+ (make-product (car exp)
+ (deriv (cadr exp) var))
+ (make-product (deriv (car exp) var)
+ (cadr exp)))
+ ) 
+ (define (product-deriv exp var)
+ (make-sum
+ (make-product (car exp)
+ (deriv (cadr exp) var))
+ (make-product (deriv (car exp) var)
+ (cadr exp)))
+ )
+ ;; interface to the rest of the system
+ (put 'deriv '(+) plus-deriv)
+ (put 'deriv '(*) product-deriv)
+ 'done)
+```
+
+c.
+
+```
+ (define (make-exponentiation m1 m2)
+ (cond
+ ((=number? m1 0) 0)
+ ((=number? m1 1) 1)
+ ((=number? m2 1) m1)
+ ((=number? m2 0) 1)
+ ((and (number? m1) (number? m2)) (expt m1 m2))
+ (else (list '** m1 m2))))
+ (define (exponent-deriv exp var)
+    (make-product 
+        (make-product (cadr exp) (make-exponentiation (car exp) (make-sum (cadr exp) -1))) 
+        (deriv (car exp) var)
+    )
+ )
+ 
+ (put 'deriv '(**) product-deriv)
+```
+
+d.
+
+`(get ⟨op⟩ ⟨type⟩)`
+
+`(get 'deriv (operator exp)) (operands exp) var)` -> ` ((get (operator exp) 'deriv) (operands exp) var)`
+
+It's not the `plus` in `deriv` package, but the `deriv`  in operator package.
+
+`(put ⟨op⟩ ⟨type⟩ ⟨item⟩)`
+
+```
+(put '(+) 'deriv plus-deriv)
+(put '(*) 'deriv product-deriv)
+```
+
+### 2.74
+
