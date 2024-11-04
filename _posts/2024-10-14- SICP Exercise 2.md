@@ -1875,6 +1875,8 @@ The general Huffman tree is supposed to be balanced, while the 2.71 example is m
 
 As the 2.71 described,  the most frequent: `1 * n -> O(n)`,  the lest frequent: `(n-1) * n -> O(n^2)`. But the least frequent won't appear that much cause it's the least frequent. Maybe that's why the general order of growth of Huffman is complicated.
 
+## 2.4
+
 ### 2.73
 
 a.
@@ -2021,3 +2023,92 @@ In my opinion, message passing is better in adding new type, but it's annoying t
 Data-directed is good at adding new method. OK, maybe both adding is convenient.
 
 > 数据导向：数据导向可以很方便地通过包机制增加新类型和新的通用操作，因此无论是增加新类型还是增加新操作，这种策略都很适合。
+
+## 2.5
+
+### 2.77
+
+The `magnitude` isn't added in the interface, thus it won't work.
+
+> how many times is apply-generic invoked? 
+
+Twice.
+
+> What procedure is dispatched to in each case?
+
+First to `magnitude` in `Complex`, then to `magnitude-rectangular` in `Rectangular`.
+
+### 2.78
+
+Like this? It's not convenient, the main package body still needs to use the generic procedure. Although it reduce the memory usage.
+
+```
+(define (attach-tag type-tag contents)
+ (cond
+  ((number? contents) contents)
+  (else (cons type-tag contents))
+ )
+)
+(define (type-tag datum)
+ (cond
+    ((pair? datum) (car datum))
+    ((number? datum) 'scheme-number)
+    (else (error "Bad tagged datum: TYPE-TAG" datum))
+ ))
+
+(define (contents datum)
+    (cond 
+ ((pair? datum) (cdr datum))
+ ((number? datum) datum)
+ (error "Bad tagged datum: CONTENTS" datum)))
+```
+
+### 2.79
+
+Could we distinguish a generic from normal pairs?
+
+> This operation should work for ordinary numbers, rational numbers, and complex numbers.
+
+OK, fair enough.
+
+```
+(define (equ? a b)
+	(cond 
+        ((and (number? a) (number? b)) (equal? a b))
+        ((and (pair? a) (pair? b)) 
+            (and (equal? (type-tag a) (type-tag b)) (equal? (contents a) (contents b)))
+        )
+    )
+)
+```
+
+> ```
+> (define (equ? x y)
+>     (apply-generic 'equ? x y))
+> ```
+
+I get it, every type should implement its own equal, cause maybe two different contents could be equal. Like 1/2 and 2/4.
+
+### 2.80
+
+So, this one should also be the generic function.
+
+```
+(define (=zero? x)
+    (apply-generic '=zero? x))
+```
+
+```
+    (put '=zero? '(scheme-number)
+        (lambda (value)
+            (= value 0)))
+```
+
+    (put '=zero? '(rational)
+        (lambda (r)
+            (= 0 (numer r))))
+
+    (put '=zero? '(complex)
+        (lambda (c)
+            (and (= 0 (real-part c))
+                 (= 0 (imag-part c)))))
