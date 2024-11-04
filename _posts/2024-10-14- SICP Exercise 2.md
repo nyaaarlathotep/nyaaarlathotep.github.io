@@ -24,7 +24,13 @@ Generic interface as dispatching on type.
 >
 > The issue underlying both of these weaknesses is that the technique for implementing generic interfaces is not additive. 
 
+message passing.
 
+> ...instead of using “intelligent operations” that dispatch on data types, to work with “intelligent data objects” that dispatch on operation names. 
+>
+> One limitation of this organization is it permits only generic procedures of one argument.
+
+Just like OO? Well, not like.
 
 ## 2.1
 
@@ -1993,3 +1999,25 @@ d.
 
 Just implement a new set of methods for the new company.
 
+### 2.75
+
+```
+(define (make-from-mag-ang r a)
+ (define (dispatch op)
+ (cond ((eq? op 'real-part)  (* (magnitude z) (cos (angle z))))
+ ((eq? op 'imag-part)  (* (magnitude z) (sin (angle z))))
+ ((eq? op 'magnitude) r)
+ ((eq? op 'angle) a)
+ (else (error "Unknown op: MAKE-FROM-REAL-IMAG" op))))
+ dispatch)
+```
+
+### 2.76
+
+The question ask us which method is type-oriented and which one is operation-oriented.
+
+In my opinion, message passing is better in adding new type, but it's annoying to add new method cause you need to add the new operation to every type.
+
+Data-directed is good at adding new method. OK, maybe both adding is convenient.
+
+> 数据导向：数据导向可以很方便地通过包机制增加新类型和新的通用操作，因此无论是增加新类型还是增加新操作，这种策略都很适合。
