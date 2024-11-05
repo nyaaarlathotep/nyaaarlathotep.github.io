@@ -30,7 +30,11 @@ message passing.
 >
 > One limitation of this organization is it permits only generic procedures of one argument.
 
-Just like OO? Well, not like.
+Just like OO? Well, not that like.
+
+The methods belonging in generic types, especially the `Combining Data of Different Types`. Do you have any idea?
+
+Coercion? Implicit Type Conversion!
 
 ## 2.1
 
@@ -2103,12 +2107,96 @@ So, this one should also be the generic function.
         (lambda (value)
             (= value 0)))
 ```
-
+```
     (put '=zero? '(rational)
         (lambda (r)
             (= 0 (numer r))))
+```
+```
+(put '=zero? '(complex)
+    (lambda (c)
+        (and (= 0 (real-part c))
+             (= 0 (imag-part c)))))
+```
 
-    (put '=zero? '(complex)
-        (lambda (c)
-            (and (= 0 (real-part c))
-                 (= 0 (imag-part c)))))
+### 2.81
+
+a.
+
+`complex` seems just throw a error, while `scheme-number` would loop infinitely.
+
+b.
+
+She's wrong. The `apply-generic` doesn't need  this. Moreover, this could cause infinite loop cause `scheme-number` would try to convert itself to itself infinitely.
+
+c.
+
+I'm not sure if this is necessary, two same types would end in the else branch of inner cond.
+
+```
+(define (apply-generic op . args)
+  (let ((type-tags (map type-tag args)))
+    (let ((proc (get op type-tags)))
+      (if proc
+          (apply proc (map contents args))
+          (if (= (length args) 2)
+              (let ((type1 (car type-tags))
+                    (type2 (cadr type-tags))
+                    (a1 (car args))
+                    (a2 (cadr args)))
+                (let ((t1->t2 (get-coercion type1 type2))
+                      (t2->t1 (get-coercion type2 type1)))
+                  (cond 
+                  		((equal? type1 type2) (error "No method for these types"
+                                (list op type-tags)))
+                  		(t1->t2
+                         (apply-generic op (t1->t2 a1) a2))
+                        (t2->t1
+                         (apply-generic op a1 (t2->t1 a2)))
+                        (else
+                         (error "No method for these types"
+                                (list op type-tags))))))
+              (error "No method for these types"
+                     (list op type-tags)))))))
+```
+
+### 2.82
+
+I'm not sure if there exists a method which needs two different types. Like a method named eat which needs a dog and a piece of food. In this case the conversion is not capable.
+
+>  Show how to generalize apply-generic to handle coercion in the general case of multiple arguments.
+
+Maybe not. I need another method to recursively modify the list and test whether it can be processed. 
+
+### 2.83
+
+```
+(put 'raise '(scheme-number)
+ (lambda (x) 
+   (make-rat x 1)
+ )
+)
+```
+
+real? Do we have `real` yet?
+
+```
+(put 'raise '(rational)
+ (lambda (x) 
+    (* 1.0 (/ (numer x) (denom x)))
+ )
+)
+```
+
+```
+(put 'raise '(real)
+ (lambda (x) 
+   (make-complex-from-real-imag x 0)
+ )
+)
+```
+
+### 2.84
+
+My implement in last problem is not capable in this one, I need to rewrite another. Also, we need to maintain a tower **hierarchy** of the types, which should be a list. Troublesome.
+
