@@ -2254,3 +2254,67 @@ My implement in last problem is not capable in this one, I need to rewrite it. A
 ### 2.85
 
 ### 2.86
+
+### 2.87
+
+```
+(define (=zero? x)
+    (apply-generic '=zero? x))
+```
+
+```
+    (put '=zero? '(scheme-number)
+        (lambda (value)
+            (= value 0)))
+```
+
+```
+    (put '=zero? '(rational)
+        (lambda (r)
+            (= 0 (numer r))))
+```
+
+```
+(put '=zero? '(complex)
+    (lambda (c)
+        (and (= 0 (real-part c))
+             (= 0 (imag-part c)))))
+```
+
+```
+(put '=zero? '(polynomial)
+    (lambda (c)
+    	(if (empty-termlist? c)
+    		#t
+    		(and (=zero (coeff (first-term c))) (=zero? (rest-terms c)))
+    	)
+    )
+)
+```
+
+### 2.88
+
+```
+(define (negation p)
+	(define (negation-terms terms)
+		(let ((first (first-term terms)))
+		(adjoin-term (make-term (order first) (- (coeff first)))
+			(negation-terms (rest-terms terms))
+		)
+		)
+	)
+	(if (empty-termlist? (term-list p))
+		p
+		(make-poly (variable p) (negation-terms (term-list p)))
+	)
+)
+```
+
+```
+(define (sub-poly p1 p2)
+	(add-poly p1 (negation p2))
+)
+```
+
+
+
