@@ -2198,5 +2198,59 @@ real? Do we have `real` yet?
 
 ### 2.84
 
-My implement in last problem is not capable in this one, I need to rewrite another. Also, we need to maintain a tower **hierarchy** of the types, which should be a list. Troublesome.
+My implement in last problem is not capable in this one, I need to rewrite it. Also, we need to maintain a tower **hierarchy** of the types, which should be a list. Troublesome.
 
+```
+(define number-tower '(scheme-number realrational real complex))
+```
+
+```
+(define (raise-left type1 type2)
+    (let ((type1-hi (memq type1 number-tower)) (type2-hi (memq type2 number-tower)))
+        (if (and type1-hi type2-hi (< (length type1-hi) (length type2-hi))))
+    )
+)
+
+(define (raise-right type1 type2)
+    (let ((type1-hi (memq type1 number-tower)) (type2-hi (memq type2 number-tower)))
+        (if (and type1-hi type2-hi (> (length type1-hi) (length type2-hi))))
+    )
+)
+```
+
+```
+(define (apply-generic op . args)
+  (let ((type-tags (map type-tag args)))
+    (let ((proc (get op type-tags)))
+      (if proc
+          (apply proc (map contents args))
+          (if (= (length args) 2)
+              (let ((type1 (car type-tags))
+                    (type2 (cadr type-tags))
+                    (a1 (car args))
+                    (a2 (cadr args)))
+                (let ((raise-t1 
+                       (raise-left type1 type2))
+                      (raise-t2 
+                       (raise-right type1 type2)))
+                  (cond (raise-t1
+                         (apply-generic 
+                          op (raise a1) a2))
+                        (raise-t2
+                         (apply-generic 
+                          op a1 (raise a2)))
+                        (else
+                         (error 
+                          "No method for 
+                           these types"
+                          (list 
+                           op 
+                           type-tags))))))
+              (error 
+               "No method for these types"
+               (list op type-tags)))))))
+```
+
+### 2.85
+
+### 2.86
