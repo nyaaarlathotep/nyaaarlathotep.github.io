@@ -2433,11 +2433,15 @@ This procedure returns `(list quotient remainder)`
 
 What order? I don't get it.
 
-I kind of  get it, any certain order could make sense, we need to reform a `canonical` form when there are different variables.
+I kind of  get it, any certain order could make sense, we need to reform a `canonical` form when there are different variables. I hide lower ordered variable in the coefficient of the `higher_var`^0.
 
 How to extract a potential variable from the coefficients? Or should I make the `make-poly` returns a ordered poly?
 
-Maybe not. This is not finished.
+We must ensure every poly is constructed with variables in order.
+
+Maybe not. This answer not finished. I tried.
+
+I need `'add '(polynomial scheme-number)`, `'multiply '(polynomial scheme-number)`.
 
 ```
 (define (tag p) (attach-tag 'polynomial p))
@@ -2446,4 +2450,48 @@ Maybe not. This is not finished.
 (put 'mul '(polynomial polynomial)
 	(lambda (p1 p2) (tag (mul-poly p1 p2))))
 ```
+
+```
+(define (variable<? v1 v2)
+  (string<? (symbol->string v1) (symbol->string v2)))
+
+(define (canonical v p)
+    (make-poly v 
+        (adjoin-term
+            (make-term 0 p)
+            (the-empty-termlist)
+        )
+    )
+)
+
+(define (mul-poly p1 p2)
+    (cond 
+        ((same-variable? (variable p1) (variable p2))
+            (make-poly (variable p1)
+            (mul-terms (term-list p1) (term-list p2)))
+        )
+        ((variable<? (variable p1) (variable p2)) 
+            (mul-poly p1 (canonical (variable p1) p2))
+        )
+        (else (mul-poly p2 p1))
+    )
+)
+
+(define (add-poly p1 p2)
+    (cond 
+        ((same-variable? (variable p1) (variable p2))
+            (make-poly (variable p1)
+            (add-terms (term-list p1) (term-list p2)))
+        )
+        ((variable<? (variable p1) (variable p2)) 
+            (add-poly p1 (canonical (variable p1) p2))
+        )
+        (else (add-poly p2 p1))
+    )
+)
+
+
+```
+
+
 
