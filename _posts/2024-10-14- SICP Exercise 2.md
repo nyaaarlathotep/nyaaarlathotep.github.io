@@ -2427,3 +2427,23 @@ This procedure returns `(list quotient remainder)`
                     ))))))
 ```
 
+### 2.92
+
+> imposing an ordering on variables
+
+What order? I don't get it.
+
+I kind of  get it, any certain order could make sense, we need to reform a `canonical` form when there are different variables.
+
+How to extract a potential variable from the coefficients? Or should I make the `make-poly` returns a ordered poly?
+
+Maybe not. This is not finished.
+
+```
+(define (tag p) (attach-tag 'polynomial p))
+(put 'add '(polynomial polynomial)
+	(lambda (p1 p2) (tag (add-poly p1 p2))))
+(put 'mul '(polynomial polynomial)
+	(lambda (p1 p2) (tag (mul-poly p1 p2))))
+```
+
