@@ -2316,5 +2316,114 @@ My implement in last problem is not capable in this one, I need to rewrite it. A
 )
 ```
 
+### 2.89
 
+The `term` related procedures couldn't rewrite, thus there are much unnecessary cost, or I should rewrite the whole package. Maybe there are some better cut-in point.
+
+```
+(define (adjoin-term term term-list)
+  (if (=zero? (coeff term))
+      term-list
+      (
+      	if (= (length term-list) (order term))
+      		(cons (coeff term) term-list)
+      		(adjoin-term term (cons 0 term-list))
+      )))
+
+(define (the-empty-termlist) '())
+
+(define (first-term term-list) (make-term (- (length term-list) 1) (car term-list)))
+
+(define (rest-terms term-list) (cdr term-list))
+
+(define (empty-termlist? term-list) 
+  (null? term-list))
+
+(define (make-term order coeff) 
+  (list order coeff))
+
+(define (order term) (car term))
+(define (coeff term) (cadr term))
+```
+
+### 2.90
+
+Tag tag tag.
+
+Only `adjoin-term` and `first-term` need to be generic, which is a little wired. Or should I package all the procedures twice? This would be duplicate.
+
+```
+(define (adjoin-term term term-list)
+  (if (=zero? (coeff term))
+      term-list
+      (
+      	if (= (length term-list) (order term))
+      		(cons (coeff term) term-list)
+      		(adjoin-term term (cons 0 term-list))
+      )))
+(define (first-term term-list) (make-term (- (length term-list) 1) (car term-list)))
+
+(define (tag p) (attach-tag 'dense p))
+(put 'make-poly 'dense
+	(lambda (var terms) (tag (make-poly var terms))))
+(put 'adjoin-term '(dense) adjoin-term)
+(put 'first-term '(dense) first-term)
+```
+
+```
+(define (adjoin-term term term-list)
+  (if (=zero? (coeff term))
+      term-list
+      (cons term term-list)))
+(define (first-term term-list) (car term-list))
+
+(define (tag p) (attach-tag 'sparse p))
+
+(define (tag p) (attach-tag 'sparse p))
+(put 'make-poly 'sparse
+	(lambda (var terms) (tag (make-poly var terms))))
+(put 'adjoin-term '(sparse) adjoin-term)
+(put 'first-term '(sparse) first-term)
+```
+
+### 2.91
+
+```
+	(define (negation-terms terms)
+		(let ((first (first-term terms)))
+		(adjoin-term (make-term (order first) (- (coeff first)))
+			(negation-terms (rest-terms terms))
+		)
+		)
+	)
+```
+
+This procedure returns `(list quotient remainder)`
+
+```
+(define (div-terms L1 L2)
+  (if (empty-termlist? L1)
+      (list (the-empty-termlist) 
+            (the-empty-termlist))
+      (let ((t1 (first-term L1))
+            (t2 (first-term L2)))
+        (if (> (order t2) (order t1))
+            (list (the-empty-termlist) L1)
+            (let ((new-c (div (coeff t1) 
+                              (coeff t2)))
+                  (new-o (- (order t1) 
+                            (order t2))))
+              (let ((rest-of-result
+                     (div-terms 
+                     	(add-terms L1 
+                     		(negation-terms 
+                     			(mul-terms 
+                     				(list (make-term new-o new-c))
+                     				L2
+                     				))) L2)
+                     ))
+               (list (adjoin-term (make-term new-o new-c) (car rest-of-result)) 
+                	(cadr rest-of-result))
+                    ))))))
+```
 
