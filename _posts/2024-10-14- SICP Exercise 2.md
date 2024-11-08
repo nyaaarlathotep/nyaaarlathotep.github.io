@@ -2497,27 +2497,88 @@ I need `'add '(polynomial scheme-number)`, `'multiply '(polynomial scheme-number
 
 ### 2.93
 
-```
-(define (make-term order coeff) 
-  (list order coeff))
-(put 'make 'polynomial
-       (lambda (var terms) 
-         (tag (make-poly var terms))))
-  'done)
-(define (make-poly variable term-list)
-    (cons variable term-list))
-(define (make-polynomial var terms)
-  ((get 'make 'polynomial) var terms))
-```
+I replace the natural operations with generic operations. Only when there are integers do `make-rat` reduce fractions.
 
 ```
 (define (make-rat n d)
- (let ((g (gcd n d)))
- (if (< (* n d) 0)
-    (cons (- (abs (/ n g))) (abs (/ d g)))
-    (cons (abs (/ n g)) (abs (/ d g)))
+ (if (and (integer? n) (integer? d))
+ 	(let ((g (gcd n d)))
+ 		(if (< (* n d) 0)
+    		(cons (- (abs (/ n g))) (abs (/ d g)))
+    		(cons (abs (/ n g)) (abs (/ d g)))
+ 		)
+ 	)
+ 	(cons n d)
  )
+)
+
+     (define (numer x) (car x)) 
+     (define (denom x) (cdr x)) 
+     (define (make-rat n d) (cons n d)) 
+     (define (add-rat x y) 
+         (make-rat (add (mul (numer x) (denom y)) 
+                        (mul (numer y) (demom x))) 
+                   (mul (denom x) (demom y)))) 
+     (define (sub-rat x y) 
+         (make-rat (sub (mul (numer x) (denom y)) 
+                        (mul (numer y) (demom x))) 
+                   (mul (denom x) (demom y)))) 
+     (define (mul-rat x y) 
+         (make-rat (mul (numer x) (numer y)) 
+                   (mul (denom x) (denom y)))) 
+     (define (div-rat x y) 
+         (make-rat (mul (numer x) (denom y)) 
+                   (mul (denom x) (numer y)))) 
+      
+```
+
+### 2.94
+
+You are converting polynomials to new scheme-nums.
+
+Should I be concerned about the different vars? 
+
+```
+(define (gcd-terms a b)
+  (if (empty-termlist? b)
+      a
+      (gcd-terms b (remainder-terms a b))))
+
+(define (remainder-terms a b)
+	(cadr (div-terms a b))
+)
+
+(define (gcd-poly p1 p2)
+  (if (same-variable? (variable p1) 
+                      (variable p2))
+      (make-poly 
+       (variable p1)
+       (gcd-terms (term-list p1)
+                  (term-list p2)))
+      (error "Polys not in same var: 
+              ADD-POLY"
+             (list p1 p2))))
+
+(put 'greatest-common-divisor '(polynomial polynomial) (lambda (a b) (tag (gcd-poly a b))))
+(put 'greatest-common-divisor '(scheme-num scheme-num) (lambda (a b) gcd))
+```
+
+Then.
+
+```
+(define (make-rat n d)
+ (if (and (integer? n) (integer? d))
+ 	(let ((g (apply-generic 'greatest-common-divisor a b)))
+ 		(cons (div n g) (div d g))
+ 	)
  )
 )
 ```
 
+### 2.95
+
+### 2.96
+
+### 2.97
+
+I still can't run all my procedures, cause I don't have `put` and `get` definitions. Maybe I will handle these problems after then.
