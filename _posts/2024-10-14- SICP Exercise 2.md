@@ -2427,3 +2427,31 @@ This procedure returns `(list quotient remainder)`
                     ))))))
 ```
 
+
+
+### 2.93
+
+```
+(define (make-term order coeff) 
+  (list order coeff))
+(put 'make 'polynomial
+       (lambda (var terms) 
+         (tag (make-poly var terms))))
+  'done)
+(define (make-poly variable term-list)
+    (cons variable term-list))
+(define (make-polynomial var terms)
+  ((get 'make 'polynomial) var terms))
+```
+
+```
+(define (make-rat n d)
+ (let ((g (gcd n d)))
+ (if (< (* n d) 0)
+    (cons (- (abs (/ n g))) (abs (/ d g)))
+    (cons (abs (/ n g)) (abs (/ d g)))
+ )
+ )
+)
+```
+
