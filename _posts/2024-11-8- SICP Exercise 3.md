@@ -193,3 +193,90 @@ Can they combined together?
 "COPS COMING"
 ```
 
+### 3.5
+
+Well, the `MIT-Scheme` is not the same as the racket, I need to rewrite `random-in-range`.
+
+```
+(define (random-in-range low high)
+  (let ((range (- high low)))
+    (+ low (random range))))
+```
+
+```
+(define (estimate-integral P x1 x2 y1 y2 trials)
+  (* 4 (random-integral-test P x1 x2 y1 y2 trials)))
+(define (random-integral-test  P x1 x2 y1 y2 trials)
+  (define (iter trials-remaining trials-passed)
+    (let ((x (random-in-range x1 x2)))
+      (let ((y (random-in-range y1 y2)))
+        (cond ((= trials-remaining 0)   
+               (/ trials-passed trials))
+              ((P x y)
+               (iter (- trials-remaining 1)
+                     (+ trials-passed 1)
+                     ))
+              (else
+               (iter (- trials-remaining 1)
+                     trials-passed
+                     ))))))
+  (iter trials 0))
+
+
+(define (get-pi trials)
+    (exact->inexact
+        (estimate-integral (lambda (x y)
+                               (< (+ (square x)
+                                     (square y))
+                                1.0))
+                           -1.0
+                           1.0
+                           -1.0
+                           1.0
+                           trials)))
+```
+
+I could use the original `monte-carlo`, it seems much easier.
+
+> ```
+> (define (estimate-integral p? x1 x2 y1 y2 trials)
+>     (* 4
+>        (monte-carlo trials
+>                     (lambda ()
+>                         (p? (random-in-range x1 x2)
+>                             (random-in-range y1 y2))))))
+> ```
+>
+> ```
+> (define (get-pi trials)
+>     (exact->inexact
+>         (estimate-integral (lambda (x y)
+>                                (< (+ (square x)
+>                                      (square y))
+>                                 1.0))
+>                            -1.0
+>                            1.0
+>                            -1.0
+>                            1.0
+>                            trials)))
+> ```
+
+### 3.6
+
+We don't have `rand` or ` rand-update` in Racket. Oh, I find something: [2 SICP Language](https://docs.racket-lang.org/sicp-manual/SICP_Language.html). OK, it still doesn't work.
+
+I guess it's Just another dispatch.
+
+```
+ (define rand 
+   (let ((x random-init)) 
+     (define (dispatch message) 
+       (cond ((eq? message 'generate) 
+               (begin (set! x (rand-update x)) 
+                      x)) 
+             ((eq? message 'reset) 
+               (lambda (new-value) (set! x new-value))))) 
+     dispatch)) 
+
+```
+
