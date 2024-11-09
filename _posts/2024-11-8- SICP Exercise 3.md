@@ -12,6 +12,8 @@ essays: true
 
 > Until now, all our procedures could be viewed as specifications for computing mathematical functions. A call to a procedure computed the value of the function applied to the given arguments, and two calls to the same procedure with the same arguments always produced the same result.
 
+> In general, programming with assignment forces us to carefully consider the relative orders of the assignments to make sure that each statement is using the correct version of the variables that have been changed. This issue simply does not arise in functional programs.[11](https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pres_0/6515/sicp.zip/full-text/book/book-Z-H-20.html#footnote_Temp_339) The complexity of imperative programs becomes even worse if we consider applications in which several processes execute concurrently. We will return to this in section [3.4](https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pres_0/6515/sicp.zip/full-text/book/book-Z-H-23.html#%_sec_3.4). First, however, we will address the issue of providing a computational model for expressions that involve assignment, and explore the uses of objects with local state in designing simulations.
+
 ## 3.1
 
 ### 3.1
@@ -277,6 +279,81 @@ I guess it's Just another dispatch.
              ((eq? message 'reset) 
                (lambda (new-value) (set! x new-value))))) 
      dispatch)) 
+
+```
+
+### 3.7
+
+```
+(define (make-account balance pass)
+  (define (withdraw amount)
+    (if (>= balance amount)
+        (begin (set! balance 
+                     (- balance amount))
+               balance)
+        "Insufficient funds"))
+  (define (deposit amount)
+    (set! balance (+ balance amount))
+    balance)
+  (define (dispatch m)
+    (cond ((eq? m 'withdraw) withdraw)
+          ((eq? m 'deposit) deposit)
+          (else (error "Unknown request: 
+                 MAKE-ACCOUNT" m))))
+  (lambda (key m)
+  	(if (eq? key pass)
+  		(dispatch m)
+  		(lambda (X) "Incorrect password")
+  	)
+  )
+)
+```
+
+```
+(define (make-joint account old-pass new-pass)
+  (lambda (key m)
+    (if (eq? key new-pass)
+      (account old-pass m)
+      (error "Incorrect password" key)
+    )
+  )
+)
+```
+
+The book said I may modify the 3.3 answer, while I just proxy it. There may be some better answer?
+
+### 3.8
+
+Wow, quite Interesting.
+
+```
+(define (f add)
+	
+	(let ((a -1))
+		(begin (set! a (+ add))
+			a
+		)
+	)
+)
+```
+
+This is another sign of *referentially transparent*.
+
+```
+> (define f (make-f))
+> (f 0)
+-1
+> (f 1)
+0
+
+```
+
+```
+> (define f (make-f))
+> (f 1)
+0
+> (f 0)
+0
 
 ```
 
