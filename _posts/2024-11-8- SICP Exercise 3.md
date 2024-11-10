@@ -372,3 +372,7 @@ A procedure as a pair is created in an environment.
 > To apply a procedure to arguments, create a new environment containing a frame that binds the parameters to the values of the arguments. **The enclosing environment of this frame is the environment specified by the procedure**. Now, within this new environment, evaluate the procedure body. 
 
 The enclosing environment of this frame is the environment in which the procedure is created.
+
+### 3.9
+
+![3.9](/images/sicp/3.9.png)
