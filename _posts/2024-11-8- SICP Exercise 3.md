@@ -14,6 +14,12 @@ essays: true
 
 > In general, programming with assignment forces us to carefully consider the relative orders of the assignments to make sure that each statement is using the correct version of the variables that have been changed. This issue simply does not arise in functional programs.[11](https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pres_0/6515/sicp.zip/full-text/book/book-Z-H-20.html#footnote_Temp_339) The complexity of imperative programs becomes even worse if we consider applications in which several processes execute concurrently. We will return to this in section [3.4](https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pres_0/6515/sicp.zip/full-text/book/book-Z-H-23.html#%_sec_3.4). First, however, we will address the issue of providing a computational model for expressions that involve assignment, and explore the uses of objects with local state in designing simulations.
 
+substitution model of evaluation:
+
+>  To apply a compound procedure to arguments, evaluate the body of the procedure with each formal parameter replaced by the corresponding argument. 
+
+
+
 ## 3.1
 
 ### 3.1
@@ -357,3 +363,12 @@ This is another sign of *referentially transparent*.
 
 ```
 
+## 3.2
+
+> λ-expression was evaluated to produce the procedure
+
+A procedure as a pair is created in an environment.
+
+> To apply a procedure to arguments, create a new environment containing a frame that binds the parameters to the values of the arguments. **The enclosing environment of this frame is the environment specified by the procedure**. Now, within this new environment, evaluate the procedure body. 
+
+The enclosing environment of this frame is the environment in which the procedure is created.
