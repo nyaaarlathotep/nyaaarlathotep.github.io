@@ -373,6 +373,18 @@ A procedure as a pair is created in an environment.
 
 The enclosing environment of this frame is the environment in which the procedure is created.
 
+I wonder which part is frame and which is env. The body of the lambda (i.e. the pointers' pair) is frame?
+
 ### 3.9
 
 ![3.9](/images/sicp/3.9.png)
+
+### 3.10
+
+I guess...
+
+![3.9](/images/sicp/3.10-1.png)
+
+![3.9](/images/sicp/3.10-2.png)
+
+![3.9](/images/sicp/3.10-3.png)
