@@ -375,6 +375,13 @@ The enclosing environment of this frame is the environment in which the procedur
 
 I wonder which part is frame and which is env. The body of the lambda (i.e. the pointers' pair) is frame?
 
+> two key properties that make local procedure definitions a useful technique for modularizing programs:
+>
+> - The names of the local procedures do not interfere with names external to the enclosing procedure, because the local procedure names will be bound in the frame that the procedure creates when it is run, rather than being bound in the global environment.
+> - The local procedures can access the arguments of the enclosing procedure, simply by using parameter names as free variables. This is because the body of the local procedure is evaluated in an environment that is subordinate to the evaluation environment for the enclosing procedure.
+
+Will `sqrt` create a lot of env? There is a recursive call.
+
 ### 3.9
 
 ![3.9](/images/sicp/3.9.png)
@@ -383,8 +390,24 @@ I wonder which part is frame and which is env. The body of the lambda (i.e. the 
 
 I guess...
 
+There is an unused env which stands for the `((lambda (balance) ⟨body⟩) 100)`
+
 ![3.9](/images/sicp/3.10-1.png)
 
 ![3.9](/images/sicp/3.10-2.png)
 
 ![3.9](/images/sicp/3.10-3.png)
+
+### 3.11
+
+`(define acc (make-account 50))`
+
+![3.9](/images/sicp/3.11-1.png)
+
+`((acc 'deposit) 40)`
+
+I'm not sure how to express the another call `(( ) )`.
+
+![3.9](/images/sicp/3.11-2.png)
+
+`((acc 'deposit) 60)`
