@@ -392,22 +392,28 @@ I guess...
 
 There is an unused env which stands for the `((lambda (balance) ⟨body⟩) 100)`
 
-![3.9](/images/sicp/3.10-1.png)
+![3.10-1](/images/sicp/3.10-1.png)
 
-![3.9](/images/sicp/3.10-2.png)
+![3.10-2](/images/sicp/3.10-2.png)
 
-![3.9](/images/sicp/3.10-3.png)
+![3.10-3](/images/sicp/3.10-3.png)
 
 ### 3.11
 
 `(define acc (make-account 50))`
 
-![3.9](/images/sicp/3.11-1.png)
+![3.11-1](/images/sicp/3.11-1.png)
 
 `((acc 'deposit) 40)`
 
 I'm not sure how to express the another call `(( ) )`.
 
-![3.9](/images/sicp/3.11-2.png)
+![3.11-2-1](/images/sicp/3.11-2-1.png)
+
+![3.11-2-2](/images/sicp/3.11-2-2.png)
 
 `((acc 'deposit) 60)`
+
+![3.11-3-1](/images/sicp/3.11-3-1.png)
+
+![3.11-3-2](/images/sicp/3.11-3-2.png)
