@@ -408,12 +408,86 @@ There is an unused env which stands for the `((lambda (balance) ⟨body⟩) 100)
 
 I'm not sure how to express the another call `(( ) )`.
 
-![3.11-2-1](/images/sicp/3.11-2-1.png)
-
-![3.11-2-2](/images/sicp/3.11-2-2.png)
+![3.11-2](/images/sicp/3.11-2.png)
 
 `((acc 'deposit) 60)`
 
-![3.11-3-1](/images/sicp/3.11-3-1.png)
+![3.11-3](/images/sicp/3.11-3.png)
 
-![3.11-3-2](/images/sicp/3.11-3-2.png)
+` (define acc2 (make-account 100))`
+
+They only share the same `dispatch` code.
+
+![3.11-4](/images/sicp/3.11-4.png)
+
+### 3.12
+
+Drawings again.
+
+Now we don't have `set-cdr!`. Racket! OK, I just need to import them.
+
+```
+(require rnrs/mutable-pairs-6)
+(require compatibility/mlist)
+
+(define (mappend x y)
+ (if (null? x)
+ y
+ (mcons (mcar x) (append (mcdr x) y))))
+
+(define (append! x y)
+ (set-cdr! (mlast-pair x) y)
+ x)
+  (define (mlast-pair x)
+ (if (null? (mcdr x)) x (mlast-pair (mcdr x))))
+```
+
+> ```
+> (define x (mlist 'a 'b))
+>  (define y (mlist 'c 'd))
+>  (define z (mappend x y))
+>  z
+> (mcons 'a (mcons 'b (mcons 'c (mcons 'd '()))))
+>  (mcdr x)
+> ```
+
+```
+(b)
+```
+
+> ```
+> (define w (append! x y))
+>  w
+> (mcons 'a (mcons 'b (mcons 'c (mcons 'd '()))))
+>  (mcdr x)
+> ```
+
+```
+(b c d)
+```
+
+I don't want to draw. This problem illustrate the difference between pointer and value manipulation. `append` creates a new list and `append!` change the original list. 
+
+### 3.13
+
+![3.13](/images/sicp/3.13.png)
+
+>   What happens if we try to compute (last-pair z)?
+
+Infinite loop.
+
+### 3.14
+
+It seems the `mystery` reverse the order of the given list. Besides, it consumes no extra memory space and the time order is O(n).
+
+```
+(a b c d)
+```
+
+```
+(d c b a)
+(a)
+```
+
+![3.14](/images/sicp/3.14.png)
+
