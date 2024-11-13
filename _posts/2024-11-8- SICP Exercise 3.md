@@ -491,3 +491,114 @@ It seems the `mystery` reverse the order of the given list. Besides, it consumes
 
 ![3.14](/images/sicp/3.14.png)
 
+### 3.15
+
+![3.15](/images/sicp/3.15.png)
+
+These are the effects of pointers. `z1` has the two pointers point to the same pair so the `set-to-wow!` seemingly change the both part of the pair.
+
+### 3.16
+
+> made up of exactly three pairs
+
+Does that mean three `cons`?
+
+```
+> (count-pairs (cons 3 (cons 2 (cons 1 null))))
+3
+> (define a (cons 2 '(1)))
+> a
+'(2 1)
+> (define b (cons a (cdr a)))
+> b
+'((2 1) 1)
+> (count-pairs b)
+4
+```
+
+```
+> (define a (cons 1 null))
+> (define b (cons a a))
+> (define c (cons b b))
+> a
+'(1)
+> b
+'((1) 1)
+> c
+'(((1) 1) (1) 1)
+> (count-pairs c)
+7
+
+```
+
+![3.16](/images/sicp/3.16.png)
+
+### 3.17
+
+We need to use the `eq?` to remove calculated pairs.
+
+```
+(define (count-pairs x)
+  (define counted null)
+  (define (aux n)
+    (if (or (not (pair? n)) (memq n counted))
+      0
+      (begin
+      (set! counted (cons n counted))
+      (+ (aux (car n))
+         (aux (cdr n))
+         1))
+      )
+  )
+  (aux x)
+)
+```
+
+I wonder whether this would calculate different pairs with the same value.
+
+```
+> a
+'(3)
+> (define b (cons a a))
+> (eq? (car b) (cdr b))
+#t
+> (eq? a '(3))
+#f> (memq '(3) (cons (car b) null))
+#f
+> (cons (car b) null)
+'((3))
+> (memq (car b) (cons (car b) null))
+'((3))
+
+> (memq '(3) (cons (car b) null))
+#f
+> (cons (car b) null)
+'((3))
+> (memq (car b) (cons (car b) null))
+'((3))
+
+```
+
+Never mind. `eq?` only checks the pointer.
+
+### 3.18
+
+Typical.
+
+```
+(define (loop? x)
+    (define (aux a b)
+        (cond 
+            ((eq? a b) #t)
+            ((null? (cdr b) #t))
+            ((null? (cdr (cdr b)) #t))
+            (else (aux (cdr a) (cdr (cdr b)) ))
+        )
+    )
+    (aux x x)
+)
+```
+
+### 3.19
+
+As above.
