@@ -602,3 +602,15 @@ Typical.
 ### 3.19
 
 As above.
+
+### 3.20
+
+It's not a pair any more, but a procedure.
+
+![3.20 1](/images/sicp/3.20-1.png)
+
+![3.20 2](/images/sicp/3.20-2.png)
+
+![3.20 3](/images/sicp/3.20-2.png)
+
+Gross. I still don't know how to express `(() )`.
