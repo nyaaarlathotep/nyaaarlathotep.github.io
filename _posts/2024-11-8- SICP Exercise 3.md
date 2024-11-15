@@ -382,6 +382,8 @@ I wonder which part is frame and which is env. The body of the lambda (i.e. the 
 
 Will `sqrt` create a lot of env? There is a recursive call.
 
+> Since Scheme provides no way to mutate a symbol, this sharing is undetectable. Note also that the sharing is what enables us to compare symbols using `eq?`, which simply checks equality of pointers.
+
 ### 3.9
 
 ![3.9](/images/sicp/3.9.png)
@@ -478,7 +480,7 @@ Infinite loop.
 
 ### 3.14
 
-It seems the `mystery` reverse the order of the given list. Besides, it consumes no extra memory space and the time order is O(n).
+It seems the `mystery` reverse the order of the given list. Besides, it consumes no extra memory space and the order of growth is O(n).
 
 ```
 (a b c d)
@@ -648,3 +650,128 @@ It's not a pair any more, but a procedure.
 ![3.20 3](/images/sicp/3.20-2.png)
 
 Gross. I still don't know how to express `(() )`.
+
+### 3.21
+
+```
+(define (print-queue queue)
+    (mcar queue)
+)
+```
+
+The interpreter print the queue's front-ptr and rear-ptr at the same time. So it seems the element get inserted twice. Whether the queue is empty depends on the front-ptr which is relevant to the concrete implementation of `delete-queue!` and `empty-queue?`. I wonder this could really disturb the garbage collector.
+
+### 3.22
+
+```
+(define (make-queue)
+    (let ((front-ptr null )
+    (rear-ptr null ))
+    (define (empty-queue? queue)
+        (null? (front-ptr queue)))
+    (define (set-front-ptr! queue item)
+        (set! front-ptr item))
+    (define (set-rear-ptr! queue item)
+        (set! rear-ptr item))
+    (define (insert-queue! queue item)
+        (let ((new-pair (mcons item '())))
+        (cond
+            ((empty-queue? queue)
+            (set-front-ptr! queue new-pair)
+            (set-rear-ptr! queue new-pair)
+            queue)
+            (else
+            (set-mcdr! (rear-ptr queue) new-pair)
+            (set-rear-ptr! queue new-pair)
+            queue)
+            )))
+    (define (delete-queue! queue)
+        (cond ((empty-queue? queue)
+            (error "DELETE! called with an empty queue" queue))
+            (else (set-front-ptr! queue (mcdr (front-ptr queue)))
+            queue)))
+    (define (dispatch m) 
+    (cond ((eq? m 'empty-queue?) empty-queue?)
+        ((eq? m 'front-ptr) front-ptr)
+        ((eq? m 'rear-ptr) rear-ptr)
+        ((eq? m 'set-front-ptr!) set-front-ptr!)
+        ((eq? m 'set-rear-ptr!) set-rear-ptr!)
+        ((eq? m 'insert-queue!) insert-queue!)
+        ((eq? m 'delete-queue!) delete-queue!)
+        (else
+            (error "Undefined operation: CONS" m))))
+dispatch))
+```
+
+### 3.23
+
+I made a double pointer element to represent the deque.
+
+Maybe I'd write some selectors for the element itself. It's confusing using `mcar` and `mcdr` now.
+
+`((element front-end) rear-end)`
+
+```
+
+(define (make-deque) (mcons '() '()))
+(define (empty-deque? deque)
+ (null? (front-ptr deque)))
+(define (front-ptr deque) (mcar deque))
+(define (rear-ptr deque) (mcdr deque))
+(define (set-front-ptr! deque item)
+ (set-mcar! deque item))
+(define (set-rear-ptr! deque item)
+ (set-mcdr! deque item))
+
+ (define (front-deque deque)
+ (if (empty-deque? deque)
+ (error "FRONT called with an empty deque" deque)
+ (mcar (front-ptr deque))))
+
+ (define (rear-deque deque)
+ (if (empty-deque? deque)
+ (error "FRONT called with an empty deque" deque)
+ (mcar (rear-ptr deque))))
+
+(define (front-insert-deque! deque item)
+ (let ((new-pair (mcons (mcons item '()) '()) ))
+ (cond ((empty-deque? deque)
+ (set-front-ptr! deque new-pair)
+ (set-rear-ptr! deque new-pair)
+ deque)
+(else
+ (set-mcdr! new-pair (front-ptr deque))
+ (set-mcdr! (mcar (front-ptr deque)) new-pair)
+ (set-front-ptr! deque new-pair)
+ deque))))
+
+(define (rear-insert-deque! deque item)
+ (let ((new-pair (mcons (mcons item '()) '()) ))
+ (cond ((empty-deque? deque)
+ (set-front-ptr! deque new-pair)
+ (set-rear-ptr! deque new-pair)
+ deque)
+(else
+ (set-mcdr! (rear-ptr deque) new-pair)
+ (set-mcdr! (mcar new-pair) (rear-ptr-deque))
+ (set-rear-ptr! deque new-pair)
+ deque))))
+
+ (define (front-delete-deque! deque)
+ (cond ((empty-deque? deque)
+ (error "DELETE! called with an empty deque" deque))
+ (else 
+    (set-front-ptr! deque (mcdr (front-ptr deque))) 
+    (set-mcdr! (mcar (front-ptr deque)) '())
+ deque)))
+
+(define (rear-delete-deque! deque)
+ (cond ((empty-deque? deque)
+ (error "DELETE! called with an empty deque" deque))
+ (else 
+    (set-rear-ptr! deque (mcdr (mcar (rear-ptr deque)))) 
+    (set-mcdr! (rear-ptr deque) '())
+ deque)))
+
+```
+
