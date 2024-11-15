@@ -775,3 +775,62 @@ Maybe I'd write some selectors for the element itself. It's confusing using `mca
 
 ```
 
+### 3.24
+
+Just rewrite assoc, all the inner methods use assoc to locate the key.
+
+```
+(define (make-table same-key?)
+  (define (assoc key records)
+  (cond ((null? records) false)
+        ((same-key? key (caar records)) 
+         (car records))
+        (else (assoc key (cdr records)))))
+  .......
+)
+```
+
+### 3.25
+
+Sure enough you come.
+
+```
+(define (assoc key records)
+  (cond ((null? records) false)
+        ((equal? key (car (car records))) 
+         (car records))
+        (else (assoc key (cdr records)))))
+
+(define (lookup keys table)
+  (define (find-final keys-left table-now)
+    (let ((record (assoc (car keys-left) (cdr table) )))
+      (if record
+        (if (null? (cdr keys-left))
+          (car record)
+          (find-final (cdr keys-left) record)
+        )
+        false))
+  )
+  (find-final keys table)
+)
+
+(define (insert! keys value table)
+  (define (aux remain-keys table-now)
+    (let ((record (assoc (car keys) (cdr table))))
+      (if record
+        (if (null? remain-keys) 
+          (set-cdr! record value)
+          (aux (cdr remain-keys) record)
+        )
+        (begin
+          (set-cdr! table (cons (cons (car remain-keys) '()) (cdr table)  )  )
+          (aux remain-keys table)
+        )
+      )
+      'ok
+    )
+  )
+  (aux keys table)
+)
+```
+
