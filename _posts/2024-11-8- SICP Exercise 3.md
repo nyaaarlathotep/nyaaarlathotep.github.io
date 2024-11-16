@@ -422,6 +422,17 @@ They only share the same `dispatch` code.
 
 ![3.11-4](/images/sicp/3.11-4.png)
 
+## 3.3
+
+```
+#! /bin/racket
+#lang sicp
+```
+
+I see.
+
+3.3.4 circuit? What's wrong with you.
+
 ### 3.12
 
 Drawings again.
@@ -879,3 +890,66 @@ Finally, the result of `(memo-fib 3)`.
 > Explain why memo-fib computes thenth Fibonacci number in a number of steps proportional to n.
 
 Because of the table, the `(memo-fib n)` for any `n` would be only calculated once. In the old `fib`, it cost much to recalculated.
+
+### 3.28
+
+> S will become 1 whenever precisely one of A and B is 1, and C will become 1 whenever A and B are both 1.
+
+It seems every signal will trigger the circuit once. What would happen if there's only one signal?
+
+```
+(define (or-gate a1 a2 output)
+ (define (or-action-procedure)
+ (let ((new-value
+ (logical-or (get-signal a1) (get-signal a2))))
+ (after-delay
+ or-gate-delay
+ (lambda () (set-signal! output new-value)))))
+ (add-action! a1 or-action-procedure)
+ (add-action! a2 or-action-procedure)
+ 'ok)
+```
+
+### 3.29
+
+```(define (or-gate a1 a2 output)
+(define (or-gate a1 a2 output)
+    (let ((a11 (make-wire)) (a21 (make-wire))  (b (make-wire)))
+        (begin
+            (inverter a1 a11)
+            (inverter a a21)
+            (and-gate a11 a21 b)
+            (inverter b output)
+        )
+    )
+)
+```
+
+It takes `(+ (* 3 inverter-delay) and-gate-delay)` time.
+
+### 3.30
+
+```
+(define (ripple-carryadder al bl sl c)
+    (define (single-adder a-remain b-remain s-remain c-in)
+        (if (null? a-remain)
+            (set-signal! c (get-signal c-in))
+            (let ((c-next (make c-next)))
+                (begin
+                    (full-adder (car a-remain) (car b-remain) c-in (car sl) c-next)
+                    (signle-adder (cdr a-remain) (cdr b-remain) (cdr s-remain) c-next)
+                )
+            )
+        )
+    )
+    (let ((first-c (make-wire)))
+        (begin
+            (set-signal! first-c 0)
+            (signle-adder al bl sl first-c)
+        )
+    )
+)
+```
+
+It takes n * `full-adder` delay, i.e. 2n * `half-adder` + n * `or` , i.e. 4n * `and` + 3n * `or` + 2n * `invert`.
+
