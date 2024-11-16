@@ -838,3 +838,44 @@ Sure enough you come.
 )
 ```
 
+### 3.26
+
+> Describe
+
+Great.
+
+`cdr table` is the records in the previous implemented table, now it is replaced with a tree. We could lookup the key by compare it with the entry key to decide which sub-tree to follow until we find or not find it in the final leaf.
+
+Also, we may just modify the `assoc` and `insert!` so we could run the new implementation.
+
+### 3.27
+
+Plz, no more drawings.
+
+` (define memo-fib...)` ` (define (memoize f)...)`
+
+![3.25-1](/images/sicp/3.25-1.png)
+
+`(memo-fib 3)`-> `(f 3)` -> `(+ (memo-fib 2) (memo-fib 1)` ->
+
+`(+ (+ (memo-fib 2) (memo-fib 1)) (memo-fib 1)` ->
+
+`(+ (+ (+ (memo-fib 1) (memo-fib 0)) (memo-fib 1)) (memo-fib 1)` 
+
+So, the first element inserted in the table is `1`.
+
+![3.25-2](/images/sicp/3.25-2.png)
+
+![3.25-3](/images/sicp/3.25-3.png)
+
+Then, the result of ` (memo-fib 2)` will be inserted in table.
+
+![3.25-4](/images/sicp/3.25-4.png)
+
+Finally, the result of `(memo-fib 3)`.
+
+![3.25-5](/images/sicp/3.25-5.png)
+
+> Explain why memo-fib computes thenth Fibonacci number in a number of steps proportional to n.
+
+Because of the table, the `(memo-fib n)` for any `n` would be only calculated once. In the old `fib`, it cost much to recalculated.
