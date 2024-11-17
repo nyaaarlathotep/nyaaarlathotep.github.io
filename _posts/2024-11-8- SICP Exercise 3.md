@@ -965,3 +965,14 @@ However, the processor is still registered in the wire `action-procedures` succe
 
 I guess the first `sum 0 New-value = 0` won't print?
 
+### 3.32
+
+> Explain why this order must be used
+
+~~Why, in my opinion, they are just different. They both have a intermediate state.~~
+
+I know, if the procedures for each segment are not called in the order in which they were added to the agenda, then the intermediate segment would executed at last.
+
+`0,1 -> 1,1 (add-to-agenda! a1)  -> 1,0 (add-to-agenda! a2)` 
+
+If first in, first out, final state would be a2 i.e. output 0 , otherwise a1 i.e. output 1 which is incorrect.
