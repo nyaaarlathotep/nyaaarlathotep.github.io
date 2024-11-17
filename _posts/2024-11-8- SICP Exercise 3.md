@@ -951,5 +951,17 @@ It takes `(+ (* 3 inverter-delay) and-gate-delay)` time.
 )
 ```
 
+I'm not sure how does the parallel circuit works. I simply add all of them.
+
 It takes n * `full-adder` delay, i.e. 2n * `half-adder` + n * `or` , i.e. 4n * `and` + 3n * `or` + 2n * `invert`.
+
+### 3.31
+
+If the procedure is not immediately run, the initial wire value 0 won't be processed when the `propagate` is called. The result wire would always be the initial value 0 if the input wire is not set to another value, e.g.  `inverter input output`. The output should be 1 when input is initially set as 0.
+
+However, the processor is still registered in the wire `action-procedures` successfully, which means the following signal could be aware.
+
+> trace through the half-adder example
+
+I guess the first `sum 0 New-value = 0` won't print?
 
