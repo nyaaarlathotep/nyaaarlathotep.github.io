@@ -20,6 +20,12 @@ substitution model of evaluation:
 
 
 
+> Although the primitive objects of the constraint system are somewhat more complex, the overall system is simpler, since there is no concern about agendas and logic delays.
+
+Sure it is. The time is always troublesome.
+
+
+
 ## 3.1
 
 ### 3.1
@@ -976,3 +982,112 @@ I know, if the procedures for each segment are not called in the order in which 
 `0,1 -> 1,1 (add-to-agenda! a1)  -> 1,0 (add-to-agenda! a2)` 
 
 If first in, first out, final state would be a2 i.e. output 0 , otherwise a1 i.e. output 1 which is incorrect.
+
+### 3.33
+
+```
+(define (adder a b c)
+  (define (process-new-value)
+    (cond ((and (has-value? a) (has-value? b))
+           (set-value! c
+                       (/ (+ (get-value a) (get-value b)) 2)
+                       me))
+          ((and (has-value? a) (has-value? c))
+           (set-value! b
+                       (- (* 2 (get-value c)) (get-value a))
+                       me))
+          ((and (has-value? b) (has-value? sum))
+           (set-value! a
+                       (- (* 2 (get-value c)) (get-value b))
+                       me))))
+  (define (process-forget-value)
+    (forget-value! a me)
+    (forget-value! b me)
+    (forget-value! c me)
+    (process-new-value))
+  (define (me request)
+    (cond ((eq? request 'I-have-a-value)  
+           (process-new-value))
+          ((eq? request 'I-lost-my-value) 
+           (process-forget-value))
+          (else 
+           (error "Unknown request -- ADDER" request))))
+  (connect a me)
+  (connect b me)
+  (connect c me)
+  me)
+```
+
+### 3.34
+
+Every parameter of the procedure should be the individual connector. In this case, the `forget` and `set-value`! rely on `equal?` to exclude the source connector and inform other connectors.
+
+Also, when `b` is set to calculate `a`, both multiplier and multiplicand are `a` which has no value so it is not processed. 
+
+### 3.35
+
+```
+(define (squarer a b)
+  (define (process-new-value)
+    (if (has-value? b)
+        (if (< (get-value b) 0)
+            (error "square less than 0 -- SQUARER" (get-value b))
+            (set-value! a
+                       (sqrt b)
+                       me))
+        (if (has-value? a)
+            (set-value! b
+                       (square a)
+                       me)
+            'ignore
+        )))
+  (define (process-forget-value)
+    (forget-value! a me)
+    (forget-value! b me)
+    (process-new-value))
+  (define (me request)
+    (cond ((eq? request 'I-have-a-value)  
+           (process-new-value))
+          ((eq? request 'I-lost-my-value) 
+           (process-forget-value))
+          (else 
+           (error "Unknown request -- SQUARER" request))))
+  (connect a me)
+  (connect b me)
+  me)
+```
+
+### 3.36
+
+They are not connected, right?
+
+![3.36](/images/sicp/3.36.png)
+
+Please, no more drawing problems... This is not the whole picture, I ignored a big part of it.
+
+### 3.37
+
+```
+(define (c- x y)
+  (let ((z (make-connector)))
+    (adder z y x)
+    z))
+
+(define (c* x y)
+  (let ((z (make-connector)))
+    (multiplier  x y z)
+    z))
+
+(define (c/ x y)
+  (let ((z (make-connector)))
+    (multiplier  z y x)
+    z))
+
+
+(define (cv x)
+  (let ((z (make-connector)))
+    (constant x z)
+    z))
+
+```
+
