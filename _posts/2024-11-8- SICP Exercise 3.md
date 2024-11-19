@@ -24,7 +24,9 @@ substitution model of evaluation:
 
 Sure it is. The time is always troublesome.
 
+> The term “mutex” is an abbreviation for mutual exclusion.
 
+Oh I see.
 
 ## 3.1
 
@@ -1157,6 +1159,97 @@ We still use the `withdraw` and `deposit` whose transaction is secured by the ac
 
 ### 3.45
 
-No no no, the `withdraw` and `deposit`  use the same `serializer` as the exchange. So when `exchange` use it to prevent other `exchange` from influencing, it also prevent the `withdraw` and `deposit` truly reaching the balance.
+No no no, the `withdraw` and `deposit`  use the same `serializer` as the `exchange`. So when `exchange` use it to prevent other `exchange` from influencing, it also prevent the `withdraw` and `deposit` truly reaching the balance.
 
 So when it's called, the program will keep wait till the world end.
+
+### 3.46
+
+![3.46](/images/sicp/3.46.png)
+
+### 3.47
+
+a.
+
+We can lock the signals list.
+
+```
+(define (make-semaphore n)
+    (define (get-list m res)
+        (if (= m 0)
+            res
+            (get-list (- m 1) (cons false res))
+        )
+    )
+    (let ((signals (get-list)) (mutex (make-mutex)))
+        (define (try-until-acquire l)
+            (if (null? l
+                (try-next signals)
+                (if (test-and-set! (car l))
+                    (try-next (cdr l))
+                )
+            ))
+        )
+        (define (release-one l)
+            (if (null? l)
+                (release-one signals)
+                (if (not (test-and-set! (car l)))
+                    (release-one (cdr l))
+                    (clear! (car l))
+                )
+            )
+        )
+        (define (the-semaphore m)
+            (cond 
+                ((eq? m 'acquire)
+                    (mutex 'acquire)
+                    (try-until-acquire signals)) ; retry
+                    (mutex 'release)
+                ((eq? m 'release) 
+                
+                    (mutex 'acquire)
+                    (release-one! signals)
+                    (mutex 'release))))
+    )
+)
+```
+
+b.
+
+Now we lock the every single cell in the list.
+
+```
+(define (make-semaphore n)
+    (define (get-list m res)
+        (if (= m 0)
+            res
+            (get-list (- m 1) (cons false res))
+        )
+    )
+    (let ((mutexs (get-list)))
+        (define (try-until-acquire l)
+            (if (null? l
+                (try-next mutexs)
+                (if (test-and-set! (car l))
+                    (try-next (cdr l))
+                )
+            ))
+        )
+        (define (release-one l)
+            (if (null? l)
+                (release-one mutexs)
+                (if (not (test-and-set! (car l)))
+                    (release-one (cdr l))
+                    (clear! (car l))
+                )
+            )
+        )
+        (define (the-semaphore m)
+            (cond 
+                ((eq? m 'acquire)
+                    (try-until-acquire mutexs)) ; retry
+                ((eq? m 'release) (release-one! mutexs))))
+    )
+)
+```
+
