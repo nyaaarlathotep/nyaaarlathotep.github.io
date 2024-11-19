@@ -14,7 +14,7 @@ essays: true
 
 Due to the shitty input method, I have no choice but to use English.
 
-A standard Chinese answer to the book's exercises: https://sicp.readthedocs.io/en/latest/index.html
+~~A standard Chinese answer to the book's exercises: https://sicp.readthedocs.io/en/latest/index.html~~ This answer left a lot of errors unresolved and the matainer seems unavailable. Use the wiki instead.
 
 - linear recursive process
   - iterative process

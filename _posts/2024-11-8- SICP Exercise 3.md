@@ -918,7 +918,7 @@ It seems every signal will trigger the circuit once. What would happen if there'
 
 ### 3.29
 
-```(define (or-gate a1 a2 output)
+```
 (define (or-gate a1 a2 output)
     (let ((a11 (make-wire)) (a21 (make-wire))  (b (make-wire)))
         (begin
@@ -1091,3 +1091,72 @@ Please, no more drawing problems... This is not the whole picture, I ignored a b
 
 ```
 
+## 3.4
+
+Great! [Concurrency primitives for SICP for Racket 7](https://gist.github.com/soegaard/d32e12d89705c774b71ee78ef930a4bf)
+
+### 3.38
+
+a.
+
+Peter and Paul have the fixed amount.
+
+Peter, Paul, Mary -> 45$
+
+Peter, Mary, Paul -> 35$
+
+Paul, Mary, Peter -> 50$
+
+Mary, Paul, Peter -> 40$
+
+b.
+
+There are a bunch of possibilities.
+
+More than these: 90\$, 110\$, 50\$... Mary makes this more complicated. The book even demands drawings.
+
+### 3.39
+
+We don't know the implementation of `make-serializer`. How could we make a conclusion? It could possibly make no changes.
+
+I guess these three.
+
+101: P1 sets x to 100 and then P2 increments x to 101.
+
+110: P2 changes x from 10 to 11 between the two times that P1 accesses the value of x during the evaluation of (* x x).
+
+121: P2 increments x to 11 and then P1 sets x to x * x.
+
+### 3.40
+
+100	1000	1000000	10000	100000	total 5
+
+1000000	only 1
+
+### 3.41
+
+I don't agree. Reading a value is a one-step execution which can't be interrupted. 
+
+Even if you protect it, someone still could modify the account balance after you check it. It's just useless.
+
+At least in this bank account scenario, there can't be anything wrong. `withdraw` and `deposit` don't set the balance to a intermediate state.
+
+### 3.42
+
+Does this actually protect the `withdraw` and `deposit` or does it just protect the produce of `protected-withdraw` and `protected-deposit`?
+
+### 3.43
+
+![3.43](/images/sicp/3.43.png)
+
+We still use the `withdraw` and `deposit` whose transaction is secured by the account inner serializer. So the sum of the balances in the accounts will be preserved.
+
+### 3.44
+
+`exchange` tries to make the two accounts exchange at last, while `transfer` just transfer and doesn't guarantee anything but the transformation, and the account balance is secured by itself.
+
+### 3.45
+
+No no no, the `withdraw` and `deposit`  use the same `serializer` as the exchange. So when `exchange` use it to prevent other `exchange` from influencing, it also prevent the `withdraw` and `deposit` truly reaching the balance.
+
+So when it's called, the program will keep wait till the world end.
