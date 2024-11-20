@@ -1315,3 +1315,35 @@ There are a list of accounts, we need to withdraw 2$ from two of them which are 
 Alice gets account a  serializer and wait for the account b while Bob gets the account b serializer and wait for the account a.
 
 In this scenario, we can't avoid deadlock.
+
+## 3.5
+
+### 3.50
+
+```
+(define (stream-map proc . argstreams)
+  (if (stream-null? (car argstreams))
+      the-empty-stream
+      (cons-stream
+       (apply proc (map stream-car argstreams))
+       (apply stream-map
+              (cons proc 
+                    (map stream-cdr 
+                         argstreams))))))
+```
+
+### 3.51
+
+```
+> (define x 
+    (stream-map 
+     show 
+     (stream-enumerate-interval 0 10)))
+012345678910
+> (stream-ref x 5)
+5
+> (stream-ref x 7)
+7
+```
+
+Something wrong...s
