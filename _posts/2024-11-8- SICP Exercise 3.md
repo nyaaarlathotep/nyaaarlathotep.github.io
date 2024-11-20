@@ -1253,3 +1253,65 @@ Now we lock the every single cell in the list.
 )
 ```
 
+### 3.48
+
+While Peter attempts to exchange a1 with a2 while Paul concurrently attempts to exchange a2 with a1, a1 has the smaller number so both of them need to acquire serialized procedure a1, one of them could succeed and the other would wait until the succeeded one finish his work. So the deadlock wouldn't happen.
+
+```
+(define getnumber 
+    (let ((first 0))
+        (begin
+            (set! first (+ 1 first))
+            first
+        )
+    )
+)
+
+(define (make-account-and-serializer balance)
+  (define (withdraw amount)
+    (if (>= balance amount)
+        (begin 
+          (set! balance (- balance amount))
+          balance)
+        "Insufficient funds"))
+  (define (deposit amount)
+    (set! balance (+ balance amount))
+    balance)
+  (let ((balance-serializer 
+         (list ((make-serializer) (getnumber)))))
+    (define (dispatch m)
+      (cond ((eq? m 'withdraw) withdraw)
+            ((eq? m 'deposit) deposit)
+            ((eq? m 'balance) balance)
+            ((eq? m 'serializer) 
+             balance-serializer)
+            (else (error "Unknown request: 
+                          MAKE-ACCOUNT"
+                         m))))
+    dispatch))
+
+(define (serialized-exchange account1 account2)
+  (let ((serializer1 (account1 'serializer))
+        (serializer2 (account2 'serializer)))
+    (if (< (car serializer1) (car serializer2))
+    ((serializer1 (serializer2 exchange))
+     account1
+     account2)
+    ((serializer2 (serializer1 exchange))
+     account1
+     account2)
+    )
+    ))
+```
+
+`balance-serializer` becomes a list which contains a number to notify its order.
+
+`serialized-exchange` would relay on the number to determine the order to exchange.
+
+### 3.49
+
+There are a list of accounts, we need to withdraw 2$ from two of them which are available. 
+
+Alice gets account a  serializer and wait for the account b while Bob gets the account b serializer and wait for the account a.
+
+In this scenario, we can't avoid deadlock.
