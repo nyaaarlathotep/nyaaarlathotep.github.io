@@ -1346,4 +1346,85 @@ In this scenario, we can't avoid deadlock.
 7
 ```
 
-Something wrong...s
+Something wrong...s 
+
+I guess all the Racket guys got the same problem: http://community.schemewiki.org/?sicp-ex-3.51 We don't have the original `delay` function which would stop the parameter from executing before pass it to the procedure.
+
+Yeah, https://www.cnblogs.com/xiangnan/p/3930359.html. It works for me.
+
+Now it becomes:
+
+```
+○ → ./test.scm 
+
+0
+1
+2
+3
+4
+55
+
+6
+77
+```
+
+There are two 5 and two 7, one is printed by the `show`, the other is the result of `stream-ref`.
+
+I find it must be called like `cons a (delay b)` for the delay to work. When the parameter is passed into the procedure, it has been evaluated. So the macro in the blog made the new syntax to replace the `cons-stream` with the direct call to `delay`, because the `delay` can't work inside the `cons-stream` procedure. So, it surly works.
+
+### 3.52
+
+```
+(define seq 
+  (stream-map 
+   accum 
+   (stream-enumerate-interval 1 20)))
+
+(display-line sum)
+
+(define y (stream-filter even? seq))
+(display-line sum)
+
+(define z 
+  (stream-filter 
+   (lambda (x) 
+     (= (remainder x 5) 0)) seq))
+
+(display-line sum)
+(newline)
+(stream-ref y 7)
+```
+
+```
+○ → ./3.52 
+
+1
+6
+10
+136
+
+136
+10
+15
+45
+55
+105
+120
+190
+210'done
+
+210
+```
+
+The `memo` makes the first several elements of the `seq` won't be calculated again.
+
+If the `stream-cons` is not memorized, the `sum` will always be the final print stream or stream ref value.
+
+If it's memorized, things will become more complicated.
+
+So we only know about the `seq`  is that the first element is 1, the following elements will depend on the `sum` in the global env at that moment, every time we call it, it has different value.
+
+Although I'm still confused, it's way too complicated. SICP! why don't you have a standard answer?
+
+See this http://community.schemewiki.org/?sicp-ex-3.52.
+
