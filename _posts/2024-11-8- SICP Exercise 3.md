@@ -1318,6 +1318,8 @@ In this scenario, we can't avoid deadlock.
 
 ## 3.5
 
+Is the infinite stream somehow like a stack? So would all tail recursive procedures be rewritten in this form?
+
 ### 3.50
 
 ```
@@ -1348,9 +1350,9 @@ In this scenario, we can't avoid deadlock.
 
 Something wrong...s 
 
-I guess all the Racket guys got the same problem: http://community.schemewiki.org/?sicp-ex-3.51 We don't have the original `delay` function which would stop the parameter from executing before pass it to the procedure.
+I guess all the Racket guys got the same problem:  [sicp-ex-3.51](http://community.schemewiki.org/?c=s&key=[[sicp-ex-3.51]]) We don't have the original `delay` function which would stop the parameter from executing before pass it to the procedure.
 
-Yeah, https://www.cnblogs.com/xiangnan/p/3930359.html. It works for me.
+Yeah, [Racket 模拟SICP的流(延时计算)](https://www.cnblogs.com/xiangnan/p/3930359.html). It works for me.
 
 Now it becomes:
 
@@ -1418,13 +1420,111 @@ I find it must be called like `cons a (delay b)` for the delay to work. When the
 
 The `memo` makes the first several elements of the `seq` won't be calculated again.
 
-If the `stream-cons` is not memorized, the `sum` will always be the final print stream or stream ref value.
+If the `stream-cons` is not memorized, the `sum` will always be the final printed stream or stream-ref value.
 
 If it's memorized, things will become more complicated.
 
-So we only know about the `seq`  is that the first element is 1, the following elements will depend on the `sum` in the global env at that moment, every time we call it, it has different value.
+So we only know about the `seq`  has the first element as 1, the following elements will depend on the `sum` in the global env at that moment, every time we call it, it returns different values.
 
-Although I'm still confused, it's way too complicated. SICP! why don't you have a standard answer?
+I'm still confused, it's way too complicated. SICP! why don't you have a standard answer?
 
-See this http://community.schemewiki.org/?sicp-ex-3.52.
+See this [sicp-ex-3.52](http://community.schemewiki.org/?c=s&key=[[sicp-ex-3.52]]) for more.
+
+### 3.53
+
+2^(n-1)
+
+### 3.54
+
+```
+(define (mul-streams s1 s2) 
+  (stream-map * s1 s2))
+```
+
+```
+(define factorials 
+  (cons-stream 1 (mul-streams integers factorials)))
+```
+
+### 3.55
+
+```
+(define (partial-sums s)
+    (cons-stream (stream-car s) (add-streams (stream-cdr s) (partial-sums s)))
+)
+```
+
+It's easy to crash into infinite loop while ref oneself. Take care.
+
+### 3.56
+
+```
+(define S (cons-stream 1 (merge (merge (scale-stream S 2) (scale-stream S 3)) (scale-stream S 5) )))
+```
+
+### 3.57
+
+I mean, it's like what we have been talking about in chapter1. Some small numbers are being evaluated over and over again, which cost a lot.
+
+### 3.58
+
+```
+(define S (expand 1 7 10))
+
+(stream-ref S 0)
+(stream-ref S 1)
+(stream-ref S 2)
+(stream-ref S 3)
+
+
+```
+
+```
+○ → ./3.58.scm 
+1
+4
+2
+8
+```
+
+```
+(define S (expand 3 8 10))
+
+(stream-ref S 0)
+(stream-ref S 1)
+(stream-ref S 2)
+(stream-ref S 3)
+
+
+```
+
+```
+○ → ./3.58.scm 
+3
+7
+5
+0
+```
+
+The result is the exact result of `(/ (* num radix) den)`. The first element is the integer part, followed by the decimal part.
+
+### 3.59
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
