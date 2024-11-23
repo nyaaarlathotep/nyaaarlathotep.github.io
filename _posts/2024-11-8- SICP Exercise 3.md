@@ -1510,7 +1510,92 @@ The result is the exact result of `(/ (* num radix) den)`. The first element is 
 
 ### 3.59
 
+1.
 
+```
+(define (integrate-series s)
+  (mul-streams s (div-streams (ones) (integers)))
+)
+```
+
+2.
+
+I guess...
+
+```
+(define cosine-series 
+  (cons-stream 1 (scale-stream (integrate-series sine-series) -1)))
+
+(define sine-series 
+  (cons-stream 0 (integrate-series cosine-series)))
+```
+
+### 3.60
+
+```
+(define (mul-series s1 s2)
+  (cons-stream (* (stream-car s1) (stream-car s2)) 
+    (add-streams 
+        (add-streams (scale-stream s2 (stream-car s1)) (scale-stream s1 (stream-car s2))) 
+        (cons-stream 0 
+            (mul-series (stream-cdr s1) (stream-cdr s2))) )))
+```
+
+`(a1+b1+c1+d1+....) * (a2+b2+c2+d2+...) =(cons  (a1*a2)  (( a1 * (a2+b2+c2+...)   + a2 * (a1+b1+c1+...) ) + (0 + (b1+c1+d1+...)*(b2+c2+d2+...) )`, a1*a2 is the lowest coefficient, the following polys are the rest coefficients.
+
+### 3.61
+
+How could you...
+
+I'm not sure whether this would incur infinite loop... I haven't define the first element of `X`.
+
+```
+(define (invert-unit-series s)
+    (scale-stream (mul-series s (invert-unit-series s)))
+)
+```
+
+Sure it does. I haven't distinguished the `S` with `SR`.
+
+Here is another answer from the [sicp-ex-3.61](http://community.schemewiki.org/?sicp-ex-3.61). Thanks leafac.
+
+> ```
+> (define (invert-unit-series series) 
+>    (define inverted-unit-series 
+>      (cons-stream 
+>       1 
+>       (scale-stream (mul-streams (stream-cdr series) 
+>                                  inverted-unit-series) 
+>                     -1))) 
+>    inverted-unit-series) 
+> ```
+
+### 3.62
+
+`a / b = 1/a * b`? Like this?
+
+```
+ (define (div-series nums dems)
+  (let ((c (stream-car dems)))
+    (if (= c 0)
+        (error "wrong")
+        (mul-series nums 
+            (invert-series dems))
+    )))
+```
+
+OK. Things are different for coefficients.
+
+> ```
+>  (define (div-series s1 s2) 
+>    (let ((c (stream-car s2))) 
+>      (if (= c 0) 
+>          (error "constant term of s2 can't be 0!") 
+>          (scale-stream 
+>           (mul-series s1 (invert-unit-series 
+>                           (scale-stream s2 (/ 1 c)))) 
+>           (/ 1 c))))) 
+> ```
 
 
 
