@@ -279,7 +279,7 @@ I could use the original `monte-carlo`, it seems much easier.
 
 ### 3.6
 
-We don't have `rand` or ` rand-update` in Racket. Oh, I find something: [2 SICP Language](https://docs.racket-lang.org/sicp-manual/SICP_Language.html). OK, it still doesn't work.
+We don't have `rand` or `rand-update` in Racket. Oh, I find something: [2 SICP Language](https://docs.racket-lang.org/sicp-manual/SICP_Language.html). OK, it still doesn't work.
 
 I guess it's Just another dispatch.
 
@@ -424,7 +424,7 @@ I'm not sure how to express the another call `(( ) )`.
 
 ![3.11-3](/images/sicp/3.11-3.png)
 
-` (define acc2 (make-account 100))`
+`(define acc2 (make-account 100))`
 
 They only share the same `dispatch` code.
 
@@ -871,7 +871,7 @@ Also, we may just modify the `assoc` and `insert!` so we could run the new imple
 
 Plz, no more drawings.
 
-` (define memo-fib...)` ` (define (memoize f)...)`
+`(define memo-fib...)` `(define (memoize f)...)`
 
 ![3.25-1](/images/sicp/3.25-1.png)
 
@@ -887,7 +887,7 @@ So, the first element inserted in the table is `1`.
 
 ![3.25-3](/images/sicp/3.25-3.png)
 
-Then, the result of ` (memo-fib 2)` will be inserted in table.
+Then, the result of `(memo-fib 2)` will be inserted in table.
 
 ![3.25-4](/images/sicp/3.25-4.png)
 
@@ -1121,7 +1121,7 @@ More than these: 90\$, 110\$, 50\$... Mary makes this more complicated. The book
 
 We don't know the implementation of `make-serializer`. How could we make a conclusion? It could possibly make no changes.
 
-I guess these three.
+I guess answers are these three.
 
 101: P1 sets x to 100 and then P2 increments x to 101.
 
@@ -1597,7 +1597,42 @@ OK. Things are different for coefficients.
 >           (/ 1 c))))) 
 > ```
 
+### 3.63
 
+Using the `memo-proc` won't change these two versions' procedures in efficiency. They are different in mechanism. `memo` only works on the **same** procedure!
+
+Reasoner's version works like this: every element calls `n-1` times `sqrt-improve`.
+
+`(1.0 (sqrt-improve 1.0) (sqrt-improve (sqrt-improve 1.0)) (sqrt-improve (sqrt-improve (sqrt-improve 1.0))) ...)`
+
+While original version works like this: every element calls `sqrt-improve` with the last element. Name the streams as `s0 s1 s2 s3...`.
+
+`(1.0 (sqrt-improve 1.0) (sqrt-improve s1) (sqrt-improve s2) ...)`
+
+### 3.64
+
+```
+(define (stream-limit stream tolerance) 
+  (if (< (abs (- (stream-ref stream 1) (stream-ref stream 0))) 
+        tolerance) 
+      (stream-ref stream 1) 
+      (stream-limit (stream-cdr stream) tolerance))) 
+```
+
+### 3.65
+
+I don't know how rapidly do these sequences converge, I haven't run them yet.
+
+```
+(define (ln-summands n)
+  (cons-stream 
+   (/ 1.0 n)
+   (stream-map - (ln-summands (+ n 1)))))
+
+(define ln-stream
+   (partial-sums (ln-summands 1)) 4)
+
+```
 
 
 
