@@ -1634,15 +1634,38 @@ I don't know how rapidly do these sequences converge, I haven't run them yet.
 
 ```
 
+### 3.66
 
+`interleave` makes the result stream are selected alternatively from two pieces `(S0, T1) (S0, T2)...` and `(S1, T1) (S1, T2)...`. So before the 100th element `(1, 100)` in the second piece, there are 1 (part one) + 98 (part two) + 97 (part three) (part two is counted first in `interleave`, so part three is 97) = 198.
 
+In the part two, half the steps are in the part one, so it must *2 in the final result. So in the nth line, the main body of the formula should be something like 2^n * ...
 
+So now we need to determine the diagonal elements. I find a pic in Scheme wiki. 
 
+> ```
+>   1   2   3   4   5   6   7   8   9  ...  100   
+> 1 1   2   4   6   8  10  12  14  16       198 
+> 2     3   5   9  13  17  21  25  29        
+> 3         7  11  19  27  35  43  51
+> 4            15  23  39  .....
+> 5                31  .........
+> .
+> .
+> 100 ------------------------------------- (2^100 - 1)
+> ```
 
+The half of all is in the first line, the half of the other half is in the second line... So, let's count reversely, the diagonal element (n, n) is 1 now, then the n-1 line has taken double of it which is 2, the the n-2 line which is 4 as 2*2 ... the first line is 2^ (n-1) as n-(n-1), so the (n,n) diagonal element has the order of 2^0 + 2^1 + ... + 2^(n-1) = 2^n - 1.
 
+Now suppose that the nth line is the first line and the diagonal element with the order of (2 ^ n -1) is the first number, the mth number in the line n should has the order of  ( (2 ^ n -1)  + m + (m-1)), but we don't count the line above which will took the
 
+No way. Let just observe the graph. You can see the regulation. At least I found out the diagonal element.
 
-
+```
+f(n,m) m>=n (m,n is Z+)
+(m-n=0): 2^n - 1
+(m-n=1): (2^n - 1) + 2^(n - 1)
+(m-n>1): (2^n - 1) + 2^(n - 1) + (m - n - 1) * 2^n
+```
 
 
 
