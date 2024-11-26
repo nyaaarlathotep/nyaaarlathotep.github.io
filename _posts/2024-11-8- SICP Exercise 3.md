@@ -1320,6 +1320,8 @@ In this scenario, we can't avoid deadlock.
 
 Is the infinite stream somehow like a stack? So would all tail recursive procedures be rewritten in this form?
 
+Man! Streams are so tough.
+
 ### 3.50
 
 ```
@@ -1667,7 +1669,278 @@ f(n,m) m>=n (m,n is Z+)
 (m-n>1): (2^n - 1) + 2^(n - 1) + (m - n - 1) * 2^n
 ```
 
+### 3.67
 
+Like this? I divide the entire graph into four parts and we need to `interleave` in the `interleave`.
 
+![3.67](/images/sicp/3.67.png)
 
+```
+(define (all-pairs s t)
+  (cons-stream
+   (list (stream-car s) (stream-car t))
+   (interleave
+    (interleave
+        (stream-map (lambda (x) 
+                      (list (stream-car s) x))
+                    (stream-cdr t))
+        (pairs (stream-cdr s) (stream-cdr t)))
+    (stream-map (lambda (x) 
+        (list (stream-car t) x))
+            (stream-cdr s))
+    )
+  )
+)
+```
+
+### 3.68
+
+Most of the elements would be missing, I simulated in my mind and I guess there will only be the first row and the diagonal elements left.
+
+### 3.69
+
+It's like two doubles, now I even can't draw a graph. How to combine them?
+
+Genius! Still the first element is `s0=t0=u0`, and the part two is `s0` with the whole possibilities of `t` and ` u`, followed by a recursive call of `triples (cdr s) (cdr t) (cdr u)`. Now the whole graph is included.
+
+```
+ (define (triples s t u) 
+   (cons-stream 
+    (list (stream-car s) 
+          (stream-car t) 
+          (stream-car u)) 
+    (interleave (stream-map (lambda (x) (cons (stream-car s) x)) 
+                            (stream-cdr (pairs t u))) 
+                (triples (stream-cdr s) 
+                         (stream-cdr t) 
+                         (stream-cdr u))))) 
+
+```
+
+And then there is a easy filter.
+
+```
+ (define (phythagorean-numbers) 
+   (define (square x) (* x x)) 
+   (define numbers (triples integers integers integers)) 
+   (stream-filter (lambda (x) 
+                    (= (square (caddr x)) 
+                       (+ (square (car x)) (square (cadr x))))) 
+                  numbers)) 
+
+```
+
+### 3.70
+
+Now it's finally completed. I'm looking forward to using such a weighted procedure. I'm confused about the `interleave` then.
+
+Take care, if `weight` thinks both have the same weight, we wouldn't abandon any of them. 
+
+```
+(define (merge-weighted s1 s2 weight)
+  (cond ((stream-null? s1) s2)
+        ((stream-null? s2) s1)
+        (else
+         (let ((s1car (stream-car s1))
+               (s2car (stream-car s2)))
+           (cond ((weight s1car s2car)
+                  (cons-stream 
+                   s1car 
+                   (merge-weighted (stream-cdr s1) 
+                          s2 weight)))
+                 ((weight s2car s1car)
+                  (cons-stream 
+                   s2car 
+                   (merge-weighted s1 
+                          (stream-cdr s2) weight)))
+                 (else
+                  (cons-stream 
+                   s1car
+                   (merge-weighted
+                    (stream-cdr s1)
+                    s2
+                    weight))))))))
+```
+
+```
+(define (weighted-pairs s t weight)
+  (cons-stream
+   (list (stream-car s) (stream-car t))
+   (merge-weighted
+    (stream-map (lambda (x) 
+                  (list (stream-car s) x))
+                (stream-cdr t))
+    (weighted-pairs (stream-cdr s) (stream-cdr t) weight)
+    weight
+    )))
+```
+
+1. 
+
+```
+(define pos-orderby-sum 
+    (weighted-pairs integers integers
+        (lambda (p1 p2)
+            (<
+            (+ (car p1) (cadr p1))
+            (+ (car p2) (cadr p2))
+            )
+        )
+    )
+)
+```
+
+2. 
+
+```
+(define strange-stream (
+    (define raw (weighted-pairs integers integers
+        (lambda (p1 p2)
+            (<
+            (+ (* 2 (car p1)) (* 3 (cadr p1)) (* 5 (car p1) (cadr p1)))
+            (+ (* 2 (car p2)) (* 3 (cadr p2)) (* 5 (car p2) (cadr p2)))
+            )
+        )
+    ))
+    (define (undivisible x)
+        (not (or
+            (= 0 (modulo x 2))
+            (= 0 (modulo x 3))
+            (= 0 (modulo x 5))
+        ))
+    )
+    (stream-filter 
+        undivisible 
+        raw)
+))
+```
+
+### 3.71
+
+```
+   (define (tri x)
+        (* x x x)
+    )
+    (define (pair-tri-sum p1)
+    (+ (tri (car p1)) (tri (cadr p1)))
+    )
+```
+
+```
+(define pos-orderby-tri-sum 
+    (weighted-pairs integers integers
+        (lambda (p1 p2)
+            (<
+            (+ (tri (car p1)) (tri (cadr p1)))
+            (+ (tri (car p2)) (tri (cadr p2)))
+            )
+        )
+    )
+)
+
+(define (stream-equal stream)
+  (cond ((stream-null? stream) 
+         the-empty-stream)
+        ((= (pair-tri-sum (stream-ref stream 0)) (pair-tri-sum (stream-ref stream 1)))
+         (begin
+         (display-line (stream-ref stream 0))
+         (display-line (stream-ref stream 1))
+         (display-line (pair-tri-sum (stream-ref stream 0)))
+         (newline)
+         (cons-stream 
+          (stream-car stream)
+          (stream-equal
+           (stream-cdr stream)))
+         )
+         )
+        (else (stream-equal 
+               (stream-cdr stream)))))
+```
+
+```
+(1 12)
+(9 10)
+1729
+
+(1 12)
+(2 16)
+(9 15)
+4104
+
+(2 16)
+(2 24)
+(18 20)
+13832
+
+(2 24)
+(10 27)
+(19 24)
+20683
+
+(10 27)
+(4 32)
+(18 30)
+32832
+
+(4 32)
+(2 34)
+(15 33)
+39312
+
+'done
+```
+
+`1729, 4104, 13832, 20683, 32832, 39312`. Some irrelevant pairs are printed.
+
+### 3.72
+
+LOL, it's stuck and got killed by OS. I must have done something infinite.
+
+I modified them, remove the dirty `display` in the `equal` procedure. I'd say `stream-square-equal` is a bad name, actually it does the map job.
+
+```
+   (define (square x)
+        (* x x)
+    )
+    (define (pair-square-sum p1)
+    (+ (square (car p1)) (square (cadr p1)))
+    )
+```
+
+```
+(define (stream-square-equal stream)
+  (cond ((stream-null? stream) 
+         the-empty-stream)
+        ((and (= (pair-square-sum (stream-ref stream 0)) (pair-square-sum (stream-ref stream 1)))
+            (= (pair-square-sum (stream-ref stream 1)) (pair-square-sum (stream-ref stream 2)))
+        )
+     
+         (cons-stream 
+          (list (stream-ref stream 0) (stream-ref stream 1) (stream-ref stream 2) (pair-square-sum (stream-ref stream 0)))
+          (stream-square-equal
+           (stream-cdr stream)))
+         )
+        (else (stream-square-equal 
+               (stream-cdr stream)))))
+
+(define pos-orderby-square-sum 
+    (weighted-pairs integers integers
+        (lambda (p1 p2)
+            (<
+            (pair-square-sum p1)
+            (pair-square-sum p2)
+            )
+        )
+    )
+)
+```
+
+```
+((1 18) (6 17) (10 15) 325)
+((5 20) (8 19) (13 16) 425)
+((5 25) (11 23) (17 19) 650)
+((7 26) (10 25) (14 23) 725)
+((2 29) (13 26) (19 22) 845)
+'done
+```
 
