@@ -1978,9 +1978,40 @@ The figure looks complicated, but the problem is not that difficult.
               (cons-stream 0 sense-data)))
 ```
 
+### 3.75
 
+The `avpt` is not of the average of last value and the current value, it's the average of last average and the current value. 
 
+We need to add a `last-avpt` for the computation of  current value of the result stream.
 
+```
+(define (make-zero-crossings 
+         input-stream last-value last-avpt)
+  (let ((avpt 
+         (/ (+ (stream-car input-stream) 
+               last-value) 
+            2)))
+    (cons-stream 
+     (sign-change-detector avpt last-avpt)
+     (make-zero-crossings 
+      (stream-cdr input-stream) (stream-car input-stream) avpt))))
+```
+
+### 3.76
+
+Now there's a critical question: where is the first element of `smooth`? I `cons` a 0 at the head of it as what the problem before did.
+
+```
+(define (make-zero-crossings input-stream smooth)
+  (define (aux smoothed-s)
+    (cons-stream 
+     (sign-change-detector (stream-car smoothed-s) (stream-car (stream-cdr smoothed-s)))
+     (aux 
+       (stream-cdr smoothed-s)))
+  )
+  (aux (cons-stream 0 (smooth input-stream)))
+)
+```
 
 
 
