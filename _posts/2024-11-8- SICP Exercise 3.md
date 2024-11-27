@@ -1944,3 +1944,51 @@ I modified them, remove the dirty `display` in the `equal` procedure. I'd say `s
 'done
 ```
 
+### 3.73
+
+The figure looks complicated, but the problem is not that difficult.
+
+```
+(define (integral integrand initial-value dt)
+  (define int
+    (cons-stream 
+     initial-value
+     (add-streams (scale-stream integrand dt)
+                  int)))
+  int)
+```
+
+```
+(define (RC r c dt)
+  (lambda (s v0)
+    (add-streams
+      (scale-stream s r)
+      (integral (scale-stream s (/ 1 c)) vo dt)
+    )
+  )
+)
+```
+
+### 3.74
+
+```
+(define (zero-crossings sense-data)
+  (stream-map sign-change-detector 
+              sense-data 
+              (cons-stream 0 sense-data)))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
