@@ -2035,7 +2035,11 @@ Nice idea, using delay to prevent circle denpendency.
    ))
 ```
 
+### 3.78
 
+> homogeneous second-order linear differential equation
+
+Now this is the end. That's enough. I'm done.
 
 
 
