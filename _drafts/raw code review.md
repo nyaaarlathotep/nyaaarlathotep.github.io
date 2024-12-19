@@ -634,7 +634,7 @@ Node，TreeNode等与HashMap类似，不再做说明。
 
 public abstract class CountedCompleter extends ForkJoinTask
 
-这是一个父类，有很多子类，分别对应不同的问题。由于ConcurrentHashMap可能并发，Map中很多函数式的接口的实现都得保证并发不出现问题，最后的解决方案是使用ForkJoin来保证并发任务的执行不出现问题。它的子类，例如：`static final class ForEachValueTask<K, V> extends BulkTask<K, V, Void>`
+这是一个父类，有很多子类，分别对应不同的问题。由于 ConcurrentHashMap可能并发，Map中很多函数式的接口的实现都得保证并发不出现问题，最后的解决方案是使用ForkJoin来保证并发任务的执行不出现问题。它的子类，例如：`static final class ForEachValueTask<K, V> extends BulkTask<K, V, Void>`
 
 就可以遍历Value。
 
@@ -729,3 +729,25 @@ public abstract class CountedCompleter extends ForkJoinTask
 ```
 
 可以看到，尝试了两次cas，就是为了不加锁，这也导致最后尝试获得ConcurrentHashMap的size的时候要做一些额外的操作。
+
+# ThreadPoolExecutor
+
+Spring 的 `ThreadPoolTaskExecutor`实际也是一个 `ThreadPoolExecutor`。 
+
+使用 `ThreadFactory` 可以自定义 新增的 Thread.
+
+`prestartAllCoreThreads` 可以提前启动所有核心线程，否则只有任务来了才会启动。
+
+> Else if fewer than maximumPoolSize threads are running, a new thread will be created to handle the request only if the queue is full
+
+ 队列满了才会开始加新的非核心线程。
+
+> By default, the keep-alive policy applies only when there are more than corePoolSize threads, but method allowCoreThreadTimeOut(boolean) can be used to apply this time-out policy to core threads as well, so long as the keepAliveTime value is non-zero.
+
+核心线程也可以消亡，需要配置。
+
+>  Queue sizes and maximum pool sizes may be traded off for each other: Using large queues and small pools minimizes CPU usage, OS resources, and context-switching overhead, but can lead to artificially low throughput. If tasks frequently block (for example if they are I/ O bound), a system may be able to schedule time for more threads than you otherwise allow. Use of small queues generally requires larger pool sizes, which keeps CPUs busier but may encounter unacceptable scheduling overhead, which also decreases throughput.
+
+这里有一段对于线程池核心线程大小和队列大小与 CPU 密集与 IO 密集任务关系的评价。还就那个 trade-off.
+
+通过 `BlockingQueue` 来阻塞空闲线程。
