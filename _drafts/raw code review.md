@@ -132,7 +132,7 @@ void afterNodeInsertion(boolean var1) {
 }
 
 void afterNodeRemoval(Node<K, V> var1) {
-}
+}、
 ```
 
 ## 内部类
@@ -399,22 +399,6 @@ before和after是当前节点的前后节点，如果没有对应的前后节点
       1. 根据节点实际的类型不同，Treebin/ForwardingNode/ReservationNode ，会有不同的方法找到对应节点
    3. 如果是链表，则遍历链表查找，返回找到的值
 3. 返回null
-
-```
-        Node<K, V> find(int var1, Object var2) {
-            Node var3 = this;
-            if (var2 != null) {
-                do {
-                    Object var4;
-                    if (var3.hash == var1 && ((var4 = var3.key) == var2 || var4 != null && var2.equals(var4))) {
-                        return var3;
-                    }
-                } while((var3 = var3.next) != null);
-            }
-
-            return null;
-        }
-```
 
 ## add
 
