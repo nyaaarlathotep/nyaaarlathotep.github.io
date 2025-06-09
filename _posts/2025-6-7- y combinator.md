@@ -1,7 +1,7 @@
 ---
 layout: post
 title: Y 组合子的推导过程
-date: 2025-5-5 9:00:00 +0900
+date: 2025-6-7 9:00:00 +0900
 description: 再推一遍仍然令人感叹啊，define 也能被实现了，就像是公理突然退化成了定理一样，整个推导过程也令人头晕。
 categories: [Scheme,FP]
 keywords: Scheme, FP, The Little Schemer
