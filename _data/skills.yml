@@ -1,7 +1,11 @@
-- name: Software Engineer Keywords
+- name: languages
   keywords:
       - Java
-      - Python
       - GO
-      - Design Patterns
+      - RUST
+      - Python
 
+- name: software engineer
+  keywords:
+      - FP
+      - Design Patterns
