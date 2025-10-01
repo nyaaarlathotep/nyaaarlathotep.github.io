@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 避免使用 continue
-date: 2025-6-11 9:00:00 +0900
+date: 2025-7-19 9:00:00 +0900
 description: continue 语句非常糟糕。（真的吗？）
 categories: [translation]
 keywords: continue
