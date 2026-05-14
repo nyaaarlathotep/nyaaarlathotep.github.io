@@ -8,14 +8,14 @@ const wwwLinks = links.filter(l => l.src === 'www');
 
 <BaseLayout title="链接" description="没有链接的博客是孤独的">
   <div class="max-w-3xl mx-auto px-6 py-12">
-    <h1 class="text-3xl font-bold text-[#18181B] mb-4">链接</h1>
-    <blockquote class="text-[#6B7280] italic mb-8 pl-4 border-l-4 border-[#3B82F6]">
+    <h1 class="text-3xl md:text-4xl font-bold text-fg tracking-tight mb-4">链接</h1>
+    <blockquote class="text-fg-mute italic mb-10 pl-4 border-l-3 border-accent">
       God made relatives. Thank God we can choose our friends.
     </blockquote>
 
     {lifeLinks.length > 0 && (
-      <section class="mb-8">
-        <h2 class="text-xl font-semibold text-[#18181B] mb-4">生活</h2>
+      <section class="mb-10">
+        <h2 class="text-xl font-semibold text-fg mb-4">生活</h2>
         <ul class="space-y-2">
           {lifeLinks.map(link => (
             <li>
@@ -23,7 +23,7 @@ const wwwLinks = links.filter(l => l.src === 'www');
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="text-[#3B82F6] hover:underline transition-colors duration-200"
+                class="text-accent hover:text-accent-fg hover:underline transition-colors"
               >
                 {link.name}
               </a>
@@ -34,8 +34,8 @@ const wwwLinks = links.filter(l => l.src === 'www');
     )}
 
     {wwwLinks.length > 0 && (
-      <section class="mb-8">
-        <h2 class="text-xl font-semibold text-[#18181B] mb-4">友情链接</h2>
+      <section class="mb-10">
+        <h2 class="text-xl font-semibold text-fg mb-4">友情链接</h2>
         <ul class="space-y-2">
           {wwwLinks.map(link => (
             <li>
@@ -43,7 +43,7 @@ const wwwLinks = links.filter(l => l.src === 'www');
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="text-[#3B82F6] hover:underline transition-colors duration-200"
+                class="text-accent hover:text-accent-fg hover:underline transition-colors"
               >
                 {link.name}
               </a>
@@ -54,7 +54,7 @@ const wwwLinks = links.filter(l => l.src === 'www');
     )}
 
     {links.length === 0 && (
-      <p class="text-[#6B7280]">暂无链接，欢迎交换友链~</p>
+      <p class="text-fg-mute">暂无链接，欢迎交换友链~</p>
     )}
   </div>
 </BaseLayout>

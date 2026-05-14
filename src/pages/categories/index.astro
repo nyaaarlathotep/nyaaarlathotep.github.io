@@ -16,10 +16,11 @@ for (const post of allPosts) {
   }
 }
 
-// Sort categories alphabetically
-const sortedCategories = [...categoryMap.entries()].sort((a, b) =>
-  a[0].localeCompare(b[0])
-);
+// Sort categories by post count (descending), then alphabetically
+const sortedCategories = [...categoryMap.entries()].sort((a, b) => {
+  const diff = b[1].length - a[1].length;
+  return diff !== 0 ? diff : a[0].localeCompare(b[0]);
+});
 
 const formatDate = (d: Date) => {
   return d.toLocaleDateString('zh-CN', {
@@ -32,37 +33,41 @@ const formatDate = (d: Date) => {
 
 <BaseLayout title="分类" description="按分类浏览所有文章">
   <div class="max-w-3xl mx-auto px-6 py-12">
-    <h1 class="text-3xl font-bold text-[#18181B] mb-8">分类</h1>
+    <header class="mb-10">
+      <h1 class="text-3xl md:text-4xl font-bold text-fg tracking-tight">分类</h1>
+      <p class="mt-2 text-fg-mute">共 {sortedCategories.length} 个分类，{allPosts.length} 篇文章</p>
+    </header>
 
     <!-- Category tags -->
-    <div class="flex flex-wrap gap-2 mb-10">
+    <div class="flex flex-wrap gap-2 mb-12">
       {sortedCategories.map(([cat, posts]) => (
         <a
           href={`#${cat}`}
-          class="px-3 py-1.5 text-sm rounded-full bg-[#EFF6FF] text-[#3B82F6] font-medium hover:bg-[#DBEAFE] transition-colors duration-200"
+          class="px-3 py-1.5 text-sm rounded-full bg-accent-soft text-accent font-medium hover:bg-accent hover:text-bg transition-colors"
         >
-          {cat} ({posts.length})
+          {cat}
+          <span class="ml-1 opacity-70 tabular-nums">{posts.length}</span>
         </a>
       ))}
     </div>
 
     <!-- Category sections -->
-    <div class="space-y-10">
+    <div class="space-y-12">
       {sortedCategories.map(([cat, posts]) => (
         <section id={cat}>
-          <h2 class="text-xl font-semibold text-[#18181B] mb-4 pb-2 border-b border-gray-100">
-            {cat}
-            <span class="text-sm font-normal text-[#6B7280] ml-2">({posts.length})</span>
+          <h2 class="text-xl font-semibold text-fg mb-4 pb-2 border-b border-border-soft flex items-baseline gap-2">
+            <span>{cat}</span>
+            <span class="text-sm font-normal text-fg-mute tabular-nums">({posts.length})</span>
           </h2>
           <ul class="space-y-2">
             {posts.map(post => (
               <li class="flex items-baseline gap-3">
-                <time class="text-sm text-[#6B7280] shrink-0 w-24">
+                <time class="text-sm text-fg-mute shrink-0 w-24 tabular-nums">
                   {formatDate(getPostDate(post))}
                 </time>
                 <a
                   href={getPostUrl(post.id)}
-                  class="text-[#18181B] hover:text-[#3B82F6] transition-colors duration-200"
+                  class="text-fg hover:text-accent transition-colors"
                 >
                   {post.data.title}
                 </a>

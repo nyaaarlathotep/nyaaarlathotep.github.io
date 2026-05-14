@@ -1,16 +1,67 @@
 ---
+// Pagefind UI is generated only by `pnpm build` (postbuild step).
+// During `astro dev` the assets at /pagefind/* don't exist yet, so we
+// load them dynamically and fall back to a hint when missing.
 ---
 
 <div id="search" class="w-full max-w-md"></div>
+<noscript>
+  <p class="text-sm text-fg-mute">搜索需要启用 JavaScript。</p>
+</noscript>
 
-<link href="/pagefind/pagefind-ui.css" rel="stylesheet" />
-<script is:inline src="/pagefind/pagefind-ui.js"></script>
 <script is:inline>
-  window.addEventListener('DOMContentLoaded', function() {
-    new PagefindUI({
-      element: '#search',
-      showSubResults: true,
-      showImages: false,
-    });
-  });
+  (function () {
+    const mount = document.getElementById('search');
+    if (!mount) return;
+
+    function showFallback(msg) {
+      mount.innerHTML =
+        '<p class="text-sm text-fg-mute">' + msg + '</p>';
+    }
+
+    // Detect dev mode (no pagefind built). astro:dev injects nothing
+    // we can rely on, so we just probe the manifest.
+    fetch('/pagefind/pagefind.js', { method: 'HEAD' })
+      .then(function (r) {
+        if (!r.ok) throw new Error('not built');
+
+        // Load the CSS
+        const css = document.createElement('link');
+        css.rel = 'stylesheet';
+        css.href = '/pagefind/pagefind-ui.css';
+        document.head.appendChild(css);
+
+        // Load the UI script and init
+        const script = document.createElement('script');
+        script.src = '/pagefind/pagefind-ui.js';
+        script.onload = function () {
+          /* global PagefindUI */
+          new PagefindUI({
+            element: '#search',
+            showSubResults: true,
+            showImages: false,
+            translations: {
+              placeholder: '搜索文章…',
+              clear_search: '清除',
+              load_more: '加载更多',
+              search_label: '站内搜索',
+              filters_label: '筛选',
+              zero_results: '没有找到 [SEARCH_TERM] 的结果',
+              many_results: '共找到 [COUNT] 条 [SEARCH_TERM] 的结果',
+              one_result: '共找到 [COUNT] 条 [SEARCH_TERM] 的结果',
+              alt_search: '没有找到 [SEARCH_TERM] 的结果，是否查找 [DIFFERENT_TERM]？',
+              search_suggestion: '没有找到 [SEARCH_TERM] 的结果，请尝试：[DIFFERENT_TERM]',
+              searching: '搜索 [SEARCH_TERM] 中…',
+            },
+          });
+        };
+        script.onerror = function () {
+          showFallback('搜索索引加载失败。');
+        };
+        document.head.appendChild(script);
+      })
+      .catch(function () {
+        showFallback('搜索索引仅在 build 后可用（运行 pnpm build && pnpm preview）。');
+      });
+  })();
 </script>

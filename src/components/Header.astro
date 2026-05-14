@@ -7,56 +7,85 @@ const navItems = [
 ];
 
 const currentPath = Astro.url.pathname;
+
+const isActive = (href: string) =>
+  currentPath === href || (href !== '/' && currentPath.startsWith(href));
 ---
 
-<header class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
+<header
+  class="fixed top-0 left-0 right-0 z-50 bg-bg/80 backdrop-blur-md border-b border-border-soft"
+>
   <nav class="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
-    <a href="/" class="text-xl font-bold text-[#18181B] hover:text-[#3B82F6] transition-colors duration-200">
+    <a
+      href="/"
+      class="text-lg font-bold tracking-tight text-fg hover:text-accent transition-colors"
+    >
       nyaaar's Blog
     </a>
 
-    <!-- Desktop Nav -->
-    <ul class="hidden md:flex items-center gap-8">
-      {navItems.map(item => (
-        <li>
-          <a
-            href={item.href}
-            class={`text-sm font-medium transition-colors duration-200 ${
-              currentPath === item.href || (item.href !== '/' && currentPath.startsWith(item.href))
-                ? 'text-[#3B82F6]'
-                : 'text-[#6B7280] hover:text-[#18181B]'
-            }`}
-          >
-            {item.label}
-          </a>
-        </li>
-      ))}
-    </ul>
+    <div class="flex items-center gap-1">
+      <!-- Desktop Nav -->
+      <ul class="hidden md:flex items-center gap-1 mr-2">
+        {navItems.map(item => (
+          <li>
+            <a
+              href={item.href}
+              class:list={[
+                'px-3 py-1.5 rounded-md text-sm font-medium transition-colors',
+                isActive(item.href)
+                  ? 'text-accent bg-accent-soft'
+                  : 'text-fg-mute hover:text-fg hover:bg-bg-soft',
+              ]}
+            >
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
 
-    <!-- Mobile Menu Button -->
-    <button
-      id="menu-toggle"
-      class="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
-      aria-label="Toggle menu"
-    >
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-      </svg>
-    </button>
+      <!-- Theme toggle -->
+      <button
+        id="theme-toggle"
+        class="p-2 rounded-md text-fg-mute hover:text-fg hover:bg-bg-soft transition-colors cursor-pointer"
+        aria-label="切换主题"
+        title="切换主题"
+      >
+        <svg class="w-5 h-5 hidden" data-icon="sun" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+            d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.364-6.364l-1.414 1.414M6.05 17.95l-1.414 1.414m0-13.728l1.414 1.414M17.95 17.95l1.414 1.414M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+        <svg class="w-5 h-5 hidden" data-icon="moon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+            d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z" />
+        </svg>
+      </button>
+
+      <!-- Mobile Menu Button -->
+      <button
+        id="menu-toggle"
+        class="md:hidden p-2 rounded-md text-fg-mute hover:text-fg hover:bg-bg-soft transition-colors cursor-pointer"
+        aria-label="切换菜单"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+    </div>
   </nav>
 
   <!-- Mobile Nav -->
-  <div id="mobile-menu" class="hidden md:hidden border-t border-gray-100 bg-white">
-    <ul class="px-6 py-4 space-y-3">
+  <div id="mobile-menu" class="hidden md:hidden border-t border-border-soft bg-bg">
+    <ul class="px-6 py-3 space-y-1">
       {navItems.map(item => (
         <li>
           <a
             href={item.href}
-            class={`block text-sm font-medium py-1 transition-colors duration-200 ${
-              currentPath === item.href || (item.href !== '/' && currentPath.startsWith(item.href))
-                ? 'text-[#3B82F6]'
-                : 'text-[#6B7280] hover:text-[#18181B]'
-            }`}
+            class:list={[
+              'block px-3 py-2 rounded-md text-sm font-medium transition-colors',
+              isActive(item.href)
+                ? 'text-accent bg-accent-soft'
+                : 'text-fg-mute hover:text-fg hover:bg-bg-soft',
+            ]}
           >
             {item.label}
           </a>
@@ -66,10 +95,33 @@ const currentPath = Astro.url.pathname;
   </div>
 </header>
 
-<script>
-  const toggle = document.getElementById('menu-toggle');
-  const menu = document.getElementById('mobile-menu');
-  toggle?.addEventListener('click', () => {
-    menu?.classList.toggle('hidden');
+<script is:inline>
+  // Mobile menu
+  document.getElementById('menu-toggle')?.addEventListener('click', () => {
+    document.getElementById('mobile-menu')?.classList.toggle('hidden');
   });
+
+  // Theme toggle
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    if (!btn) return;
+    const sun = btn.querySelector('[data-icon="sun"]');
+    const moon = btn.querySelector('[data-icon="moon"]');
+
+    const sync = () => {
+      const dark = document.documentElement.dataset.theme === 'dark';
+      // show the icon for the action you'll take next
+      sun?.classList.toggle('hidden', !dark);
+      moon?.classList.toggle('hidden', dark);
+    };
+
+    sync();
+
+    btn.addEventListener('click', () => {
+      const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+      document.documentElement.dataset.theme = next;
+      try { localStorage.setItem('theme', next); } catch (_) {}
+      sync();
+    });
+  })();
 </script>

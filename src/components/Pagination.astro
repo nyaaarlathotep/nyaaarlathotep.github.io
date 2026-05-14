@@ -11,42 +11,68 @@ const getPageUrl = (page: number) => {
   return `/page/${page}/`;
 };
 
-const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+// Build a compact page list with ellipses for many pages
+function buildPages(current: number, total: number): (number | '...')[] {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  const pages: (number | '...')[] = [1];
+  const start = Math.max(2, current - 1);
+  const end = Math.min(total - 1, current + 1);
+  if (start > 2) pages.push('...');
+  for (let i = start; i <= end; i++) pages.push(i);
+  if (end < total - 1) pages.push('...');
+  pages.push(total);
+  return pages;
+}
+
+const pages = buildPages(currentPage, totalPages);
 ---
 
 {totalPages > 1 && (
-  <nav class="flex items-center justify-center gap-2 mt-10 pt-6 border-t border-gray-100">
-    {currentPage > 1 && (
+  <nav class="flex items-center justify-center gap-1.5 mt-12 pt-6 border-t border-border-soft">
+    {currentPage > 1 ? (
       <a
         href={getPageUrl(currentPage - 1)}
-        class="px-3 py-2 text-sm rounded-lg text-[#6B7280] hover:text-[#18181B] hover:bg-[#F9FAFB] transition-all duration-200"
+        class="px-3 py-2 text-sm rounded-md text-fg-mute hover:text-fg hover:bg-bg-soft transition-colors"
       >
         ← 上一页
       </a>
+    ) : (
+      <span class="px-3 py-2 text-sm rounded-md text-fg-mute/50 cursor-not-allowed">
+        ← 上一页
+      </span>
     )}
 
     <div class="flex items-center gap-1">
       {pages.map(page => (
-        <a
-          href={getPageUrl(page)}
-          class={`w-9 h-9 flex items-center justify-center text-sm rounded-lg transition-all duration-200 ${
-            page === currentPage
-              ? 'bg-[#18181B] text-white font-medium'
-              : 'text-[#6B7280] hover:text-[#18181B] hover:bg-[#F9FAFB]'
-          }`}
-        >
-          {page}
-        </a>
+        page === '...' ? (
+          <span class="w-9 h-9 flex items-center justify-center text-sm text-fg-mute">…</span>
+        ) : (
+          <a
+            href={getPageUrl(page)}
+            class:list={[
+              'w-9 h-9 flex items-center justify-center text-sm rounded-md transition-colors tabular-nums',
+              page === currentPage
+                ? 'bg-fg text-bg font-medium'
+                : 'text-fg-mute hover:text-fg hover:bg-bg-soft',
+            ]}
+          >
+            {page}
+          </a>
+        )
       ))}
     </div>
 
-    {currentPage < totalPages && (
+    {currentPage < totalPages ? (
       <a
         href={getPageUrl(currentPage + 1)}
-        class="px-3 py-2 text-sm rounded-lg text-[#6B7280] hover:text-[#18181B] hover:bg-[#F9FAFB] transition-all duration-200"
+        class="px-3 py-2 text-sm rounded-md text-fg-mute hover:text-fg hover:bg-bg-soft transition-colors"
       >
         下一页 →
       </a>
+    ) : (
+      <span class="px-3 py-2 text-sm rounded-md text-fg-mute/50 cursor-not-allowed">
+        下一页 →
+      </span>
     )}
   </nav>
 )}

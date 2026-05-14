@@ -11,7 +11,7 @@ const { title, description } = Astro.props;
 
 <BaseLayout title={title} description={description}>
   <div class="max-w-3xl mx-auto px-6 py-12">
-    <h1 class="text-3xl font-bold text-[#18181B] mb-8">{title}</h1>
+    <h1 class="text-3xl md:text-4xl font-bold text-fg tracking-tight mb-8">{title}</h1>
     <div class="prose">
       <slot />
     </div>

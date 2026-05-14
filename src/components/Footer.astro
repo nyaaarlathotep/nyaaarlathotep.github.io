@@ -2,15 +2,15 @@
 const currentYear = new Date().getFullYear();
 ---
 
-<footer class="border-t border-gray-100 mt-16">
-  <div class="max-w-4xl mx-auto px-6 py-8 flex flex-col items-center gap-3 text-sm text-[#6B7280]">
+<footer class="border-t border-border-soft mt-20">
+  <div class="max-w-4xl mx-auto px-6 py-8 flex flex-col items-center gap-3 text-sm text-fg-mute">
     <div class="flex items-center gap-2">
       <span>&copy; 2022 - {currentYear}</span>
       <a
         href="https://github.com/nyaaarlathotep"
         target="_blank"
         rel="noopener noreferrer"
-        class="text-[#3B82F6] hover:underline transition-colors duration-200"
+        class="text-accent hover:text-accent-fg hover:underline transition-colors"
       >
         nyaaar
       </a>
@@ -24,7 +24,8 @@ const currentYear = new Date().getFullYear();
       </span>
     </div>
     <div class="text-xs">
-      Powered by <a href="https://astro.build" target="_blank" class="text-[#3B82F6] hover:underline">Astro</a>
+      Powered by
+      <a href="https://astro.build" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">Astro</a>
     </div>
   </div>
 </footer>
