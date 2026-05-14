@@ -1,0 +1,59 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { social } from '../data/social';
+import { skills } from '../data/skills';
+---
+
+<BaseLayout title="关于" description="少摸鱼，多学习">
+  <div class="max-w-3xl mx-auto px-6 py-12">
+    <h1 class="text-3xl font-bold text-[#18181B] mb-8">关于</h1>
+
+    <div class="prose">
+      <p>少摸鱼，多学习。</p>
+      <p>博客内容是自己对学习内容的再整理，如果有错误请叫下我。</p>
+    </div>
+
+    <section class="mt-10">
+      <h2 class="text-xl font-semibold text-[#18181B] mb-4">联系</h2>
+      <ul class="space-y-2">
+        {social.map(item => (
+          <li class="text-[#6B7280]">
+            <span class="font-medium text-[#18181B]">{item.sitename}</span>：
+            <a
+              href={item.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-[#3B82F6] hover:underline transition-colors duration-200"
+            >
+              @{item.name}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="mt-10">
+      <h2 class="text-xl font-semibold text-[#18181B] mb-4">Skill Keywords</h2>
+      <div class="space-y-4">
+        {skills.map(group => (
+          <div>
+            <h3 class="text-base font-medium text-[#18181B] mb-2">{group.name}</h3>
+            <div class="flex flex-wrap gap-2">
+              {group.keywords.map(keyword => (
+                <span class="px-3 py-1 text-sm rounded-full border border-gray-200 text-[#6B7280] hover:border-[#3B82F6] hover:text-[#3B82F6] transition-colors duration-200">
+                  {keyword}
+                </span>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <p class="mt-10 text-xs text-[#6B7280]">
+      <a href="https://www.flaticon.com/free-icons/magpie" title="magpie icons" class="hover:underline">
+        Magpie icons created by bsd - Flaticon
+      </a>
+    </p>
+  </div>
+</BaseLayout>

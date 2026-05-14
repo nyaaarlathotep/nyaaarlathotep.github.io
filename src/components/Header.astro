@@ -1,0 +1,75 @@
+---
+const navItems = [
+  { href: '/', label: '首页' },
+  { href: '/categories/', label: '分类' },
+  { href: '/links/', label: '链接' },
+  { href: '/about/', label: '关于' },
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<header class="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
+  <nav class="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
+    <a href="/" class="text-xl font-bold text-[#18181B] hover:text-[#3B82F6] transition-colors duration-200">
+      nyaaar's Blog
+    </a>
+
+    <!-- Desktop Nav -->
+    <ul class="hidden md:flex items-center gap-8">
+      {navItems.map(item => (
+        <li>
+          <a
+            href={item.href}
+            class={`text-sm font-medium transition-colors duration-200 ${
+              currentPath === item.href || (item.href !== '/' && currentPath.startsWith(item.href))
+                ? 'text-[#3B82F6]'
+                : 'text-[#6B7280] hover:text-[#18181B]'
+            }`}
+          >
+            {item.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    <!-- Mobile Menu Button -->
+    <button
+      id="menu-toggle"
+      class="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+      aria-label="Toggle menu"
+    >
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
+  </nav>
+
+  <!-- Mobile Nav -->
+  <div id="mobile-menu" class="hidden md:hidden border-t border-gray-100 bg-white">
+    <ul class="px-6 py-4 space-y-3">
+      {navItems.map(item => (
+        <li>
+          <a
+            href={item.href}
+            class={`block text-sm font-medium py-1 transition-colors duration-200 ${
+              currentPath === item.href || (item.href !== '/' && currentPath.startsWith(item.href))
+                ? 'text-[#3B82F6]'
+                : 'text-[#6B7280] hover:text-[#18181B]'
+            }`}
+          >
+            {item.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</header>
+
+<script>
+  const toggle = document.getElementById('menu-toggle');
+  const menu = document.getElementById('mobile-menu');
+  toggle?.addEventListener('click', () => {
+    menu?.classList.toggle('hidden');
+  });
+</script>

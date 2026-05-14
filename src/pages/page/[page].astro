@@ -1,0 +1,48 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import Pagination from '../../components/Pagination.astro';
+import { getPostDate, getPostUrl, sortPostsByDate } from '../../utils/posts';
+
+export async function getStaticPaths() {
+  const PAGE_SIZE = 10;
+  const allPosts = sortPostsByDate(await getCollection('blog'));
+  const totalPages = Math.ceil(allPosts.length / PAGE_SIZE);
+
+  return Array.from({ length: totalPages - 1 }, (_, i) => ({
+    params: { page: String(i + 2) },
+    props: {
+      posts: allPosts.slice((i + 1) * PAGE_SIZE, (i + 2) * PAGE_SIZE),
+      currentPage: i + 2,
+      totalPages,
+    },
+  }));
+}
+
+interface Props {
+  posts: Awaited<ReturnType<typeof getCollection<'blog'>>>;
+  currentPage: number;
+  totalPages: number;
+}
+
+const { posts, currentPage, totalPages } = Astro.props;
+---
+
+<BaseLayout title={`第 ${currentPage} 页`}>
+  <div class="max-w-3xl mx-auto px-6 py-12">
+    <section>
+      {posts.map(post => (
+        <PostCard
+          title={post.data.title}
+          date={getPostDate(post)}
+          description={post.data.description}
+          categories={post.data.categories}
+          url={getPostUrl(post.id)}
+        />
+      ))}
+    </section>
+
+    <Pagination currentPage={currentPage} totalPages={totalPages} />
+  </div>
+</BaseLayout>

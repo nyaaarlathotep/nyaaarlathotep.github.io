@@ -1,0 +1,76 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getPostDate, getPostUrl, sortPostsByDate } from '../../utils/posts';
+
+const allPosts = sortPostsByDate(await getCollection('blog'));
+
+// Group posts by category
+const categoryMap = new Map<string, typeof allPosts>();
+for (const post of allPosts) {
+  for (const cat of post.data.categories) {
+    if (!categoryMap.has(cat)) {
+      categoryMap.set(cat, []);
+    }
+    categoryMap.get(cat)!.push(post);
+  }
+}
+
+// Sort categories alphabetically
+const sortedCategories = [...categoryMap.entries()].sort((a, b) =>
+  a[0].localeCompare(b[0])
+);
+
+const formatDate = (d: Date) => {
+  return d.toLocaleDateString('zh-CN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+};
+---
+
+<BaseLayout title="分类" description="按分类浏览所有文章">
+  <div class="max-w-3xl mx-auto px-6 py-12">
+    <h1 class="text-3xl font-bold text-[#18181B] mb-8">分类</h1>
+
+    <!-- Category tags -->
+    <div class="flex flex-wrap gap-2 mb-10">
+      {sortedCategories.map(([cat, posts]) => (
+        <a
+          href={`#${cat}`}
+          class="px-3 py-1.5 text-sm rounded-full bg-[#EFF6FF] text-[#3B82F6] font-medium hover:bg-[#DBEAFE] transition-colors duration-200"
+        >
+          {cat} ({posts.length})
+        </a>
+      ))}
+    </div>
+
+    <!-- Category sections -->
+    <div class="space-y-10">
+      {sortedCategories.map(([cat, posts]) => (
+        <section id={cat}>
+          <h2 class="text-xl font-semibold text-[#18181B] mb-4 pb-2 border-b border-gray-100">
+            {cat}
+            <span class="text-sm font-normal text-[#6B7280] ml-2">({posts.length})</span>
+          </h2>
+          <ul class="space-y-2">
+            {posts.map(post => (
+              <li class="flex items-baseline gap-3">
+                <time class="text-sm text-[#6B7280] shrink-0 w-24">
+                  {formatDate(getPostDate(post))}
+                </time>
+                <a
+                  href={getPostUrl(post.id)}
+                  class="text-[#18181B] hover:text-[#3B82F6] transition-colors duration-200"
+                >
+                  {post.data.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
+    </div>
+  </div>
+</BaseLayout>

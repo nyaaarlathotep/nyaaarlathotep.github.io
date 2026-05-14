@@ -1,0 +1,17 @@
+export const social = [
+  {
+    sitename: 'steam',
+    name: 'nyaaar',
+    url: 'https://steamcommunity.com/id/nyaaarlathotep/',
+  },
+  {
+    sitename: '微博',
+    name: 'Gurmur',
+    url: 'http://weibo.com/Gurmur',
+  },
+  {
+    sitename: 'bangumi',
+    name: 'nyaaar',
+    url: 'https://bgm.tv/user/nyaaar',
+  },
+];

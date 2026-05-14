@@ -1,0 +1,21 @@
+---
+---
+
+<section class="mt-12 pt-8 border-t border-gray-100">
+  <h3 class="text-lg font-semibold text-[#18181B] mb-6">评论</h3>
+  <div id="beaudar-comments"></div>
+</section>
+
+<script>
+  const container = document.getElementById('beaudar-comments');
+  if (container) {
+    const script = document.createElement('script');
+    script.src = 'https://beaudar.lipk.org/client.js';
+    script.setAttribute('repo', 'nyaaarlathotep/nyaaarlathotep.github.io');
+    script.setAttribute('issue-term', 'pathname');
+    script.setAttribute('theme', 'github-light');
+    script.setAttribute('crossorigin', 'anonymous');
+    script.async = true;
+    container.appendChild(script);
+  }
+</script>

@@ -1,0 +1,10 @@
+export const skills = [
+  {
+    name: 'languages',
+    keywords: ['Java', 'GO', 'RUST', 'Python'],
+  },
+  {
+    name: 'software engineer',
+    keywords: ['FP', 'Design Patterns'],
+  },
+];

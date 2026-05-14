@@ -1,0 +1,46 @@
+---
+interface Props {
+  title: string;
+  date: Date;
+  description?: string;
+  categories: string[];
+  url: string;
+}
+
+const { title, date, description, categories, url } = Astro.props;
+
+const formatDate = (d: Date) => {
+  return d.toLocaleDateString('zh-CN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+};
+---
+
+<article class="group py-6 border-b border-gray-50 last:border-b-0">
+  <a href={url} class="block">
+    <h2 class="text-lg font-semibold text-[#18181B] group-hover:text-[#3B82F6] transition-colors duration-200">
+      {title}
+    </h2>
+  </a>
+  <div class="flex items-center gap-3 mt-2 text-sm text-[#6B7280]">
+    <time datetime={date.toISOString()}>
+      {formatDate(date)}
+    </time>
+    {categories.length > 0 && (
+      <div class="flex items-center gap-1.5">
+        {categories.map(cat => (
+          <span class="px-2 py-0.5 text-xs rounded-full bg-[#EFF6FF] text-[#3B82F6] font-medium">
+            {cat}
+          </span>
+        ))}
+      </div>
+    )}
+  </div>
+  {description && (
+    <p class="mt-2 text-sm text-[#6B7280] line-clamp-2">
+      {description}
+    </p>
+  )}
+</article>

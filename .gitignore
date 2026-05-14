@@ -1,9 +1,34 @@
+# Build output
 _site/
+dist/
+.astro/
+
+# Dependencies
+node_modules/
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
 *.sw[po]
 *.~vsd
 \#*\#
 *~
-.DS_Store
+
+# Jekyll legacy
 Gemfile.lock
-.vscode/
 .jekyll-metadata
+
+# CodeBuddy local data (do not commit)
+.codebuddy/
+
+# Env / logs
+.env
+.env.*
+!.env.example
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Pagefind output (generated during build)
+public/pagefind/
