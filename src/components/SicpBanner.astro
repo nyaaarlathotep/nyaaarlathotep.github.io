@@ -1,0 +1,56 @@
+---
+// Random anime banner for SICP-category posts.
+// Image list is fetched at build time by the `sicp-pics` integration and
+// baked into src/generated/sicp-pics.json — no runtime API calls.
+import pics from '../generated/sicp-pics.json';
+
+const list: { url: string; name: string }[] = Array.isArray(pics) ? pics : [];
+const hasPics = list.length > 0;
+// Embed only the URLs to keep payload small.
+const urls = list.map(p => p.url);
+---
+
+{hasPics && (
+  <figure
+    id="sicp-banner"
+    class="my-8"
+    data-urls={JSON.stringify(urls)}
+  >
+    <div class="overflow-hidden rounded-lg border border-border-soft bg-bg-soft">
+      <img
+        id="sicp-banner-img"
+        src={urls[0]}
+        alt="random SICP anime banner"
+        loading="eager"
+        decoding="async"
+        class="block w-full max-h-96 object-contain bg-bg-mute"
+      />
+    </div>
+    <figcaption class="mt-2 text-xs text-fg-mute text-center">
+      via
+      <a
+        href="https://github.com/cat-milk/Anime-Girls-Holding-Programming-Books"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="hover:text-accent hover:underline transition-colors"
+      >
+        Anime-Girls-Holding-Programming-Books
+      </a>
+    </figcaption>
+  </figure>
+
+  <script is:inline>
+    (function () {
+      const fig = document.getElementById('sicp-banner');
+      const img = document.getElementById('sicp-banner-img');
+      if (!fig || !img) return;
+      let urls;
+      try { urls = JSON.parse(fig.dataset.urls || '[]'); } catch (_) { urls = []; }
+      if (!urls.length) return;
+      const pick = urls[Math.floor(Math.random() * urls.length)];
+      // Hide silently if the image fails to load
+      img.onerror = () => fig.remove();
+      if (pick !== img.src) img.src = pick;
+    })();
+  </script>
+)}

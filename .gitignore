@@ -28,3 +28,6 @@ pnpm-debug.log*
 
 # Pagefind output (generated during build)
 public/pagefind/
+
+# Build-time generated assets
+src/generated/

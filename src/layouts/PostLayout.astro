@@ -1,6 +1,7 @@
 ---
 import BaseLayout from './BaseLayout.astro';
 import Comments from '../components/Comments.astro';
+import SicpBanner from '../components/SicpBanner.astro';
 
 interface Props {
   title: string;
@@ -10,6 +11,7 @@ interface Props {
 }
 
 const { title, date, categories, description } = Astro.props;
+const isSicp = categories.some(c => c.toLowerCase() === 'sicp');
 
 const formatDate = (d: Date) => {
   return d.toLocaleDateString('zh-CN', {
@@ -44,6 +46,8 @@ const formatDate = (d: Date) => {
         )}
       </div>
     </header>
+
+    {isSicp && <SicpBanner />}
 
     <div class="prose">
       <slot />
