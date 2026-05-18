@@ -15,7 +15,7 @@ const currentYear = new Date().getFullYear();
         nyaaar
       </a>
     </div>
-    <div class="flex items-center gap-4 text-xs">
+    <div id="busuanzi-stats" class="hidden flex items-center gap-4 text-xs">
       <span>
         本站总访问量 <span id="busuanzi_value_site_pv">-</span> 次
       </span>
@@ -30,4 +30,69 @@ const currentYear = new Date().getFullYear();
   </div>
 </footer>
 
-<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<script is:inline>
+  /**
+   * Busuanzi (不蒜子) loader.
+   *
+   * The official endpoint at busuanzi.ibruce.info is intermittently flaky —
+   * sometimes returns HTTP 4xx for the jsonp endpoint, in which case the
+   * browser refuses to execute the script and the counters stay as "-".
+   *
+   * We:
+   *   1. fire a manual jsonp request so we can detect failure and retry
+   *   2. only reveal the stats container when a real value arrives
+   *   3. retry once on failure (covers the intermittent 404)
+   */
+  (function () {
+    const container = document.getElementById('busuanzi-stats');
+    const pvEl = document.getElementById('busuanzi_value_site_pv');
+    const uvEl = document.getElementById('busuanzi_value_site_uv');
+    if (!container || !pvEl || !uvEl) return;
+
+    let attempts = 0;
+    const MAX_ATTEMPTS = 3;
+
+    function call() {
+      attempts++;
+      const cbName = 'BusuanziCallback_' + Math.floor(Math.random() * 1e12);
+      const timer = setTimeout(onFail, 6000);
+
+      window[cbName] = function (data) {
+        clearTimeout(timer);
+        try {
+          if (data && (data.site_pv || data.site_uv)) {
+            pvEl.textContent = data.site_pv ?? '-';
+            uvEl.textContent = data.site_uv ?? '-';
+            container.classList.remove('hidden');
+            container.classList.add('flex');
+          } else {
+            onFail();
+          }
+        } finally {
+          delete window[cbName];
+          if (s.parentNode) s.parentNode.removeChild(s);
+        }
+      };
+
+      function onFail() {
+        try { delete window[cbName]; } catch (_) {}
+        if (s.parentNode) s.parentNode.removeChild(s);
+        if (attempts < MAX_ATTEMPTS) {
+          setTimeout(call, 1500);
+        }
+      }
+
+      const s = document.createElement('script');
+      s.src = 'https://busuanzi.ibruce.info/busuanzi?jsonpCallback=' + cbName;
+      s.referrerPolicy = 'no-referrer-when-downgrade';
+      s.onerror = onFail;
+      document.head.appendChild(s);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', call);
+    } else {
+      call();
+    }
+  })();
+</script>
