@@ -33,7 +33,7 @@ jobs:
       - run: pnpm build
       - run: npx pagefind --site dist
 
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: dist
 
