@@ -15,7 +15,7 @@ const currentYear = new Date().getFullYear();
         nyaaar
       </a>
     </div>
-    <div id="busuanzi-stats" class="hidden flex items-center gap-4 text-xs">
+    <div id="busuanzi-stats" class="hidden items-center gap-4 text-xs">
       <span>
         本站总访问量 <span id="busuanzi_value_site_pv">-</span> 次
       </span>
@@ -32,16 +32,19 @@ const currentYear = new Date().getFullYear();
 
 <script is:inline>
   /**
-   * Busuanzi (不蒜子) loader.
+   * Busuanzi (不蒜子) loader — best-effort, fail silently.
    *
-   * The official endpoint at busuanzi.ibruce.info is intermittently flaky —
-   * sometimes returns HTTP 4xx for the jsonp endpoint, in which case the
-   * browser refuses to execute the script and the counters stay as "-".
-   *
-   * We:
-   *   1. fire a manual jsonp request so we can detect failure and retry
-   *   2. only reveal the stats container when a real value arrives
-   *   3. retry once on failure (covers the intermittent 404)
+   * Known issues we tolerate:
+   *   - jsonp endpoint occasionally returns HTTP 4xx (browsers won't run
+   *     the script) → retry once, then give up.
+   *   - Ad-blockers (uBlock / AdGuard / Brave Shields) classify the
+   *     domain as a tracker and block with ERR_BLOCKED_BY_CLIENT
+   *     → onerror fires, we stop retrying and remember the block in
+   *     sessionStorage so other pages don't re-trigger the blocker.
+   *   - The site domain (nyaaarlathotep.github.io, 24 chars) exceeds
+   *     busuanzi's official 22-char limit, so the service may stop
+   *     returning data at any time. The container stays hidden in
+   *     that case.
    */
   (function () {
     const container = document.getElementById('busuanzi-stats');
@@ -49,43 +52,58 @@ const currentYear = new Date().getFullYear();
     const uvEl = document.getElementById('busuanzi_value_site_uv');
     if (!container || !pvEl || !uvEl) return;
 
+    // Skip entirely if a previous request was blocked in this session.
+    try {
+      if (sessionStorage.getItem('busuanzi-blocked') === '1') return;
+    } catch (_) {}
+
+    const MAX_ATTEMPTS = 2;
+    const TIMEOUT_MS = 2500;
     let attempts = 0;
-    const MAX_ATTEMPTS = 3;
 
     function call() {
       attempts++;
       const cbName = 'BusuanziCallback_' + Math.floor(Math.random() * 1e12);
-      const timer = setTimeout(onFail, 6000);
+      const s = document.createElement('script');
+      let done = false;
+
+      const cleanup = () => {
+        try { delete window[cbName]; } catch (_) { window[cbName] = undefined; }
+        if (s.parentNode) s.parentNode.removeChild(s);
+      };
+
+      const timer = setTimeout(() => {
+        if (done) return;
+        done = true;
+        cleanup();
+        if (attempts < MAX_ATTEMPTS) call();
+      }, TIMEOUT_MS);
 
       window[cbName] = function (data) {
+        if (done) return;
+        done = true;
         clearTimeout(timer);
-        try {
-          if (data && (data.site_pv || data.site_uv)) {
-            pvEl.textContent = data.site_pv ?? '-';
-            uvEl.textContent = data.site_uv ?? '-';
-            container.classList.remove('hidden');
-            container.classList.add('flex');
-          } else {
-            onFail();
-          }
-        } finally {
-          delete window[cbName];
-          if (s.parentNode) s.parentNode.removeChild(s);
+        cleanup();
+        if (data && (data.site_pv || data.site_uv)) {
+          pvEl.textContent = data.site_pv ?? '-';
+          uvEl.textContent = data.site_uv ?? '-';
+          container.classList.remove('hidden');
+          container.classList.add('flex');
         }
       };
 
-      function onFail() {
-        try { delete window[cbName]; } catch (_) {}
-        if (s.parentNode) s.parentNode.removeChild(s);
-        if (attempts < MAX_ATTEMPTS) {
-          setTimeout(call, 1500);
-        }
-      }
+      // onerror = network failure / ERR_BLOCKED_BY_CLIENT.
+      // Don't retry — the blocker would just block the next attempt too.
+      s.onerror = () => {
+        if (done) return;
+        done = true;
+        clearTimeout(timer);
+        cleanup();
+        try { sessionStorage.setItem('busuanzi-blocked', '1'); } catch (_) {}
+      };
 
-      const s = document.createElement('script');
       s.src = 'https://busuanzi.ibruce.info/busuanzi?jsonpCallback=' + cbName;
       s.referrerPolicy = 'no-referrer-when-downgrade';
-      s.onerror = onFail;
       document.head.appendChild(s);
     }
 
