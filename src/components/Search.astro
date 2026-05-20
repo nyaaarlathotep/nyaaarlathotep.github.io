@@ -4,64 +4,197 @@
 // load them dynamically and fall back to a hint when missing.
 ---
 
-<div id="search" class="w-full max-w-md"></div>
+<!-- Search Modal Overlay -->
+<div
+  id="search-modal"
+  class="fixed inset-0 z-[100] hidden items-start justify-center bg-black/50 backdrop-blur-sm pt-[10vh] px-4"
+  role="dialog"
+  aria-modal="true"
+  aria-label="搜索"
+>
+  <div
+    id="search-modal-content"
+    class="w-full max-w-2xl bg-bg rounded-xl shadow-2xl border border-border-soft overflow-hidden"
+  >
+    <!-- Header -->
+    <div class="flex items-center justify-between px-4 py-3 border-b border-border-soft">
+      <span class="text-sm text-fg-mute font-medium">站内搜索</span>
+      <div class="flex items-center gap-2">
+        <kbd class="hidden sm:inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono text-fg-mute bg-bg-soft border border-border-soft rounded">ESC</kbd>
+        <button
+          id="search-close"
+          class="p-1 rounded-md text-fg-mute hover:text-fg hover:bg-bg-soft transition-colors cursor-pointer"
+          aria-label="关闭搜索"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    </div>
+    <!-- Search mount point -->
+    <div id="search" class="w-full max-h-[60vh] overflow-y-auto"></div>
+  </div>
+</div>
+
 <noscript>
   <p class="text-sm text-fg-mute">搜索需要启用 JavaScript。</p>
 </noscript>
 
 <script is:inline>
   (function () {
+    const modal = document.getElementById('search-modal');
     const mount = document.getElementById('search');
-    if (!mount) return;
+    const closeBtn = document.getElementById('search-close');
+    const toggleBtn = document.getElementById('search-toggle');
+    if (!modal || !mount) return;
 
-    function showFallback(msg) {
-      mount.innerHTML =
-        '<p class="text-sm text-fg-mute">' + msg + '</p>';
+    let pagefindLoaded = false;
+
+    function openSearch() {
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      document.body.style.overflow = 'hidden';
+      // Focus the search input after a small delay to let Pagefind render
+      setTimeout(function () {
+        const input = mount.querySelector('input');
+        if (input) input.focus();
+      }, 100);
     }
 
-    // Detect dev mode (no pagefind built). astro:dev injects nothing
-    // we can rely on, so we just probe the manifest.
-    fetch('/pagefind/pagefind.js', { method: 'HEAD' })
-      .then(function (r) {
-        if (!r.ok) throw new Error('not built');
+    function closeSearch() {
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      document.body.style.overflow = '';
+    }
 
-        // Load the CSS
-        const css = document.createElement('link');
-        css.rel = 'stylesheet';
-        css.href = '/pagefind/pagefind-ui.css';
-        document.head.appendChild(css);
+    function showFallback(msg) {
+      mount.innerHTML = '<p class="text-sm text-fg-mute p-4">' + msg + '</p>';
+    }
 
-        // Load the UI script and init
-        const script = document.createElement('script');
-        script.src = '/pagefind/pagefind-ui.js';
-        script.onload = function () {
-          /* global PagefindUI */
-          new PagefindUI({
-            element: '#search',
-            showSubResults: true,
-            showImages: false,
-            translations: {
-              placeholder: '搜索文章…',
-              clear_search: '清除',
-              load_more: '加载更多',
-              search_label: '站内搜索',
-              filters_label: '筛选',
-              zero_results: '没有找到 [SEARCH_TERM] 的结果',
-              many_results: '共找到 [COUNT] 条 [SEARCH_TERM] 的结果',
-              one_result: '共找到 [COUNT] 条 [SEARCH_TERM] 的结果',
-              alt_search: '没有找到 [SEARCH_TERM] 的结果，是否查找 [DIFFERENT_TERM]？',
-              search_suggestion: '没有找到 [SEARCH_TERM] 的结果，请尝试：[DIFFERENT_TERM]',
-              searching: '搜索 [SEARCH_TERM] 中…',
-            },
-          });
-        };
-        script.onerror = function () {
-          showFallback('搜索索引加载失败。');
-        };
-        document.head.appendChild(script);
-      })
-      .catch(function () {
-        showFallback('搜索索引仅在 build 后可用（运行 pnpm build && pnpm preview）。');
+    function loadPagefind() {
+      if (pagefindLoaded) return;
+      pagefindLoaded = true;
+
+      fetch('/pagefind/pagefind.js', { method: 'HEAD' })
+        .then(function (r) {
+          if (!r.ok) throw new Error('not built');
+
+          var css = document.createElement('link');
+          css.rel = 'stylesheet';
+          css.href = '/pagefind/pagefind-ui.css';
+          document.head.appendChild(css);
+
+          var script = document.createElement('script');
+          script.src = '/pagefind/pagefind-ui.js';
+          script.onload = function () {
+            new PagefindUI({
+              element: '#search',
+              showSubResults: true,
+              showImages: false,
+              translations: {
+                placeholder: '搜索文章…',
+                clear_search: '清除',
+                load_more: '加载更多',
+                search_label: '站内搜索',
+                filters_label: '筛选',
+                zero_results: '没有找到 [SEARCH_TERM] 的结果',
+                many_results: '共找到 [COUNT] 条 [SEARCH_TERM] 的结果',
+                one_result: '共找到 [COUNT] 条 [SEARCH_TERM] 的结果',
+                alt_search: '没有找到 [SEARCH_TERM] 的结果，是否查找 [DIFFERENT_TERM]？',
+                search_suggestion: '没有找到 [SEARCH_TERM] 的结果，请尝试：[DIFFERENT_TERM]',
+                searching: '搜索 [SEARCH_TERM] 中…',
+              },
+            });
+            // Focus input after init
+            setTimeout(function () {
+              var input = mount.querySelector('input');
+              if (input) input.focus();
+            }, 50);
+          };
+          script.onerror = function () {
+            showFallback('搜索索引加载失败。');
+          };
+          document.head.appendChild(script);
+        })
+        .catch(function () {
+          showFallback('搜索索引仅在 build 后可用（运行 pnpm build && pnpm preview）。');
+        });
+    }
+
+    // Toggle button in header
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', function () {
+        loadPagefind();
+        openSearch();
       });
+    }
+
+    // Close button
+    if (closeBtn) {
+      closeBtn.addEventListener('click', closeSearch);
+    }
+
+    // Click outside to close
+    modal.addEventListener('click', function (e) {
+      if (e.target === modal) closeSearch();
+    });
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function (e) {
+      // Ctrl+K or Cmd+K to open
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        loadPagefind();
+        openSearch();
+      }
+      // ESC to close
+      if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+        closeSearch();
+      }
+    });
   })();
 </script>
+
+<style is:global>
+  /* Override Pagefind UI styles for modal context */
+  #search-modal .pagefind-ui {
+    --pagefind-ui-border-radius: 0;
+    --pagefind-ui-border-width: 0;
+  }
+  /* Hide the default Pagefind search icon to avoid overlap */
+  #search-modal .pagefind-ui .pagefind-ui__search-input {
+    border-radius: 0;
+    border: none;
+    border-bottom: 1px solid var(--color-border-soft, #e5e7eb);
+    padding: 0.875rem 1rem;
+    font-size: 1rem;
+    background-image: none !important;
+    padding-left: 1rem !important;
+  }
+  #search-modal .pagefind-ui .pagefind-ui__search-input:focus {
+    outline: none;
+    box-shadow: none;
+  }
+  #search-modal .pagefind-ui .pagefind-ui__search-clear {
+    top: 50%;
+    transform: translateY(-50%);
+    right: 0.75rem;
+  }
+  /* Hide the Pagefind magnifying glass icon */
+  #search-modal .pagefind-ui .pagefind-ui__form::before,
+  #search-modal .pagefind-ui .pagefind-ui__search-input::before {
+    display: none !important;
+    content: none !important;
+  }
+  #search-modal .pagefind-ui .pagefind-ui__results-area {
+    padding: 0.5rem 1rem 1rem;
+  }
+  #search-modal .pagefind-ui .pagefind-ui__result {
+    border-top-color: var(--color-border-soft, #e5e7eb);
+    padding: 0.75rem 0;
+  }
+  #search-modal .pagefind-ui .pagefind-ui__result-link {
+    color: var(--color-accent, #3b82f6);
+  }
+</style>
