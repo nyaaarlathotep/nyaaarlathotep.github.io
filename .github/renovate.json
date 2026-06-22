@@ -1,0 +1,15 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "packageRules": [
+    {
+      "description": "Group astro and @astrojs/* packages together to prevent incompatible versions",
+      "matchPackageNames": ["astro"],
+      "matchPackagePrefixes": ["@astrojs/"],
+      "groupName": "Astro",
+      "groupSlug": "astro"
+    }
+  ]
+}
