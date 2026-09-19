@@ -10,7 +10,7 @@ essays: true
 
 GO http post unexpected EOF问题的解决方案
 
-# 解决方案
+## 解决方案
 
 ## req.Close = true
 
@@ -23,7 +23,7 @@ req.Close = true
 
 将项目的GO版本提升至1.16
 
-# 原理
+## 原理
 
 GO的post默认携带header`Connection: Keep-Alive`，保持链接存活，然后复用链接进行下一次的请求，然而此时如果服务端关闭了链接，GO的下一次请求，读取body的时候就会报一个EOF的错。
 
@@ -51,7 +51,7 @@ GO的post默认携带header`Connection: Keep-Alive`，保持链接存活，然�
 
 在GO升级到1.16后解决。
 
-# reference
+## reference
 
 ## stackoverflow
 

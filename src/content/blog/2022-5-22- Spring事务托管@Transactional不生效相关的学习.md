@@ -8,7 +8,7 @@ keywords: 事务, @Transactional
 essays: true  
 ---
 
-# 前言
+## 前言
 
 为了保证数据的一致性，数据库为我们提供了事务，可以让数据更新一起成功或者一起失败。
 
@@ -22,7 +22,7 @@ essays: true
 
 让 B 的事务重新生效也很简单，在类中，添加一个对类自己的引用，然后让 Spring 注入自己，使用这个引用来调用方法 B。
 
-# 复现
+## 复现
 
 这是一个关于 paper 更新的方法，以各种不同姿势对它做了一些更改，以模拟`@Transactional`并复现发生的各种情况。
 
@@ -197,7 +197,7 @@ log:
 
 可以看到，updateWithException()中抛出了异常，这次事务生效了，paper没有更新。
 
-# 分析
+## 分析
 
 this. 和 调用注入的service. 的不同让我们的代码行为产生了不同。让我们用debug模式再跑一遍代码，看看有什么不同。
 
@@ -229,7 +229,7 @@ this. 和 调用注入的service. 的不同让我们的代码行为产生了不�
 
 总之，这个事务不生效的问题，归根结底是一个 aop 没有生效的问题，是一个 Spring 托管 bean 的问题，没有对 Spring 以及 AOP，代理的理解，就无法理解这个问题。
 
-# reference
+## reference
 
 [详解 Spring 注解@Transactional事务控制原理](https://baijiahao.baidu.com/s?id=1677407386011788448&wfr=spider&for=pc)
 

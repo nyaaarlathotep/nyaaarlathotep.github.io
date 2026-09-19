@@ -7,19 +7,19 @@ keywords: solution, Obsidian
 essays: true 
 ---
 
-# 前言
+## 前言
 
 我将笔记从印象笔记迁移至 Obsidian 后已经一段时间了，使用体验良好。但印象笔记的网页剪裁功能十分便利，我迁移完成后没有来得及找到替代品。
 
 这是在我进行搜索，尝试后，得到的最佳解决方案。
 
-# 问题描述
+## 问题描述
 
 网页浏览时，可以一键将选中的网页内容裁剪，自动新建笔记，收集。
 
 对应使用体验就是 印象笔记 网络裁剪 浏览器插件。
 
-# 解决方案
+## 解决方案
 
 Markdownload 浏览器插件 -> Obsidian 社区插件 Advanced Obsidian URI（Local Images Plus 可选） -> 新建笔记
 
@@ -70,7 +70,7 @@ Markdownload 是一个简单用于将网页保存为 md 文件的插件，开始
 
 ![Advanced Obsidian URI](/images/Obsidian/1705204560268.png)
 
-# reference
+## reference
 
 [MarkDownload  github]([deathau/markdownload: A Firefox and Google Chrome extension to clip websites and download them into a readable markdown file. (github.com)](https://github.com/deathau/markdownload?tab=readme-ov-file))
 

@@ -8,7 +8,7 @@ keywords: Spring, HandlerMethodArgumentResolver
 essays: true   
 ---
 
-# 前言
+## 前言
 
 Spring MVC十分强大，在私底下做了很多工作。
 
@@ -18,7 +18,7 @@ Spring MVC十分强大，在私底下做了很多工作。
 
 这些奇妙的情况让我决定查查资料，总结一下有关的内容。
 
-# 继承结构
+## 继承结构
 
 我大致将HandlerMethodArgumentResolver的实现分为了三类，第一类最常用，也就对应着`@PathVarible`、`@RequestParam`这些注解；第二类与第一类对应，不过不再进行筛选处理，直接将参数作为一个map传入，由使用者自行处理；第三类是一些原生的Servlet api，在需要使用的时候直接注入；第四类对应`@RequestBody`的注解，会从http请求的请求体中获取对应的参数，这一种解析方式还和http请求的协商过程关系很大。
 
@@ -32,7 +32,7 @@ Spring MVC十分强大，在私底下做了很多工作。
 
 其中省略了一些我不常用的实现，比如自动从Cookie，Session等中取值。
 
-# 源码
+## 源码
 
 这部分内容最好还是自己去查一下spring源码，挺方便的，对照看看解析的过程能更好地理解。我在其中挑选了几个过程清晰典型的类作为例子。
 

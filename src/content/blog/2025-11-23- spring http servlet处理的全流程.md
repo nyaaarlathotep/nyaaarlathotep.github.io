@@ -6,9 +6,6 @@ categories: [Spring]
 keywords: String, str
 essays: true
 ---
-
-# Spring http servlet 处理的全流程
-
 ## 前言
 
 这看起来是个八股问题，框架设计者的初衷就是让使用者无需关注底层细节，如果我们不用对框架进行二次开发，确实也不用了解那么多。

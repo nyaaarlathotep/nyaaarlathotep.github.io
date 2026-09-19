@@ -7,7 +7,7 @@ keywords: SICP, Scheme
 essays: true
 ---
 
-# Chapter 1
+## Chapter 1
 
 很早就涉及到尾递归了，这对于递归真的很重要。
 

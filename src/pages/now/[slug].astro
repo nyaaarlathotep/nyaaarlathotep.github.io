@@ -1,0 +1,166 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NowEntry from '../../components/NowEntry.astro';
+import { formatNowDate, getNowUrl, sortNowEntries } from '../../utils/now';
+
+export async function getStaticPaths() {
+  const entries = sortNowEntries(await getCollection('now'));
+
+  return entries.map((entry, index) => ({
+    params: { slug: entry.id },
+    props: {
+      entry,
+      isCurrent: index === 0,
+      newer: entries[index - 1],
+      older: entries[index + 1],
+    },
+  }));
+}
+
+interface Props {
+  entry: CollectionEntry<'now'>;
+  isCurrent: boolean;
+  newer?: CollectionEntry<'now'>;
+  older?: CollectionEntry<'now'>;
+}
+
+const { entry, isCurrent, newer, older } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<BaseLayout title={`${entry.data.title} · 现在`} description={entry.data.summary}>
+  <div class="snapshot-page">
+    <nav class="snapshot-page__top" aria-label="Now 归档导航">
+      <a href="/now/">NOW</a>
+      <span aria-hidden="true">/</span>
+      <a href="/now/#archive-title">过去的现在</a>
+      <span aria-hidden="true">/</span>
+      <span>{formatNowDate(entry.data.date)}</span>
+    </nav>
+
+    <NowEntry entry={entry} current={isCurrent}>
+      <Content />
+    </NowEntry>
+
+    <nav class="snapshot-page__browse" aria-label="翻阅近况快照">
+      {newer ? (
+        <a href={getNowUrl(newer.id)} class="snapshot-page__newer">
+          <span aria-hidden="true">←</span>
+          <span>
+            <small>更新一篇</small>
+            {newer.data.title}
+          </span>
+        </a>
+      ) : (
+        <a href="/now/" class="snapshot-page__newer">
+          <span aria-hidden="true">←</span>
+          <span>
+            <small>回到</small>
+            现在
+          </span>
+        </a>
+      )}
+
+      {older && (
+        <a href={getNowUrl(older.id)} class="snapshot-page__older">
+          <span>
+            <small>更早一篇</small>
+            {older.data.title}
+          </span>
+          <span aria-hidden="true">→</span>
+        </a>
+      )}
+    </nav>
+  </div>
+</BaseLayout>
+
+<style>
+  :global(:root) {
+    --now-current: #b45309;
+    --now-current-soft: rgba(180, 83, 9, 0.13);
+  }
+
+  :global(:root[data-theme='dark']) {
+    --now-current: #fbbf24;
+    --now-current-soft: rgba(251, 191, 36, 0.14);
+  }
+
+  .snapshot-page {
+    max-width: 48rem;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 0;
+  }
+
+  .snapshot-page__top {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--color-border-soft);
+    color: var(--color-fg-mute);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+  }
+
+  .snapshot-page__top a {
+    color: var(--color-fg-soft);
+    text-decoration: none;
+  }
+
+  .snapshot-page__top a:hover {
+    color: var(--color-accent);
+  }
+
+  .snapshot-page__browse {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem;
+    margin-top: 5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .snapshot-page__browse a {
+    display: flex;
+    gap: 0.8rem;
+    align-items: center;
+    min-width: 0;
+    color: var(--color-fg);
+    text-decoration: none;
+  }
+
+  .snapshot-page__browse a:hover {
+    color: var(--color-accent);
+  }
+
+  .snapshot-page__browse small {
+    display: block;
+    margin-bottom: 0.25rem;
+    color: var(--color-fg-mute);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+  }
+
+  .snapshot-page__older {
+    justify-self: end;
+    text-align: right;
+  }
+
+  @media (max-width: 40rem) {
+    .snapshot-page {
+      padding-top: 2rem;
+    }
+
+    .snapshot-page__browse {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      margin-top: 4rem;
+    }
+
+    .snapshot-page__older {
+      justify-self: stretch;
+      justify-content: flex-end;
+    }
+  }
+</style>

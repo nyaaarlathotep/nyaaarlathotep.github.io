@@ -1,0 +1,132 @@
+---
+import type { NowEntry } from '../utils/now';
+import { formatNowDate } from '../utils/now';
+
+interface Props {
+  entry: NowEntry;
+  current?: boolean;
+  permalink?: boolean;
+}
+
+const { entry, current = false, permalink = false } = Astro.props;
+---
+
+<article class="now-entry">
+  <header class="now-entry__header">
+    <div class="now-entry__eyebrow">
+      <span class:list={['now-entry__state', { 'now-entry__state--current': current }]}>
+        <span class="now-entry__dot" aria-hidden="true"></span>
+        {current ? '此刻' : '当时'}
+      </span>
+      <span aria-hidden="true">/</span>
+      <time datetime={entry.data.date.toISOString()}>{formatNowDate(entry.data.date)}</time>
+      {entry.data.location && (
+        <>
+          <span aria-hidden="true">/</span>
+          <span>{entry.data.location}</span>
+        </>
+      )}
+    </div>
+
+    <h1>{entry.data.title}</h1>
+    <p class="now-entry__summary">{entry.data.summary}</p>
+
+    {permalink && (
+      <a class="now-entry__permalink" href={`/now/${entry.id}/`} aria-label="打开这份近况的永久链接">
+        永久链接 <span aria-hidden="true">↗</span>
+      </a>
+    )}
+  </header>
+
+  <div class="now-entry__body prose">
+    <slot />
+  </div>
+</article>
+
+<style>
+  .now-entry__header {
+    max-width: 46rem;
+    padding: 2.25rem 0 2.5rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .now-entry__eyebrow {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.55rem;
+    margin-bottom: 1.35rem;
+    color: var(--color-fg-mute);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    line-height: 1.5;
+  }
+
+  .now-entry__state {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: var(--color-fg-soft);
+    font-weight: 500;
+  }
+
+  .now-entry__state--current {
+    color: var(--now-current);
+  }
+
+  .now-entry__dot {
+    width: 0.45rem;
+    height: 0.45rem;
+    border-radius: 999px;
+    background: currentColor;
+  }
+
+  .now-entry__state--current .now-entry__dot {
+    box-shadow: 0 0 0 4px var(--now-current-soft);
+  }
+
+  h1 {
+    max-width: 17ch;
+    margin: 0;
+    color: var(--color-fg);
+    font-size: clamp(2rem, 5vw, 3.35rem);
+    font-weight: 700;
+    letter-spacing: 0;
+    line-height: 1.18;
+    text-wrap: balance;
+  }
+
+  .now-entry__summary {
+    max-width: 38rem;
+    margin: 1.35rem 0 0;
+    color: var(--color-fg-soft);
+    font-size: 1.08rem;
+    line-height: 1.85;
+  }
+
+  .now-entry__permalink {
+    display: inline-block;
+    margin-top: 1.25rem;
+    color: var(--color-fg-mute);
+    font-size: 0.8rem;
+    text-decoration: none;
+  }
+
+  .now-entry__permalink:hover {
+    color: var(--color-accent);
+  }
+
+  .now-entry__body {
+    margin-top: 3rem;
+  }
+
+  @media (max-width: 40rem) {
+    .now-entry__header {
+      padding-top: 1.5rem;
+    }
+
+    .now-entry__summary {
+      font-size: 1rem;
+    }
+  }
+</style>

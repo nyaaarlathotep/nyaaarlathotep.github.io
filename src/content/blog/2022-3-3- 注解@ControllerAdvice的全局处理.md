@@ -8,7 +8,7 @@ keywords: Spring, ControllerAdvice
 essays: true  
 ---
 
-# 前言
+## 前言
 
 `@ControllerAdvice `是Spring MVC一个强大的工具，可以对Controller做一些全局的增强和处理。
 
@@ -44,7 +44,7 @@ Spring boot中常用`@RestControllerAdvice `对服务所有的controller进行�
 - @InitBinder —— 全局controller入参的预处理，可以注册自定义参数的解析
 - @ModelAttribute —— 全局公共模型数据
 
-# 注册
+## 注册
 
 ## 初始化
 
@@ -387,7 +387,7 @@ private WebDataBinderFactory getDataBinderFactory(HandlerMethod handlerMethod) t
     }
 ```
 
-# 具体使用
+## 具体使用
 
 ## @ExceptionHandler —— 统一异常处理
 
@@ -452,6 +452,6 @@ public class HelloController {
 }
 ```
 
-# reference
+## reference
 
 [调整多个ControllerAdvice的执行顺序](https://www.jianshu.com/p/d4b3bc3b46fc)

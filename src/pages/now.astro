@@ -1,0 +1,317 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import NowEntry from '../components/NowEntry.astro';
+import { formatNowDate, getNowUrl, sortNowEntries } from '../utils/now';
+
+const entries = sortNowEntries(await getCollection('now'));
+const current = entries[0];
+
+if (!current) {
+  throw new Error('Now 页面至少需要一份近况记录');
+}
+
+const { Content } = await render(current);
+const archive = entries.slice(1);
+const archiveByYear = new Map<number, typeof archive>();
+
+for (const entry of archive) {
+  const year = entry.data.date.getFullYear();
+  archiveByYear.set(year, [...(archiveByYear.get(year) ?? []), entry]);
+}
+---
+
+<BaseLayout title="现在" description={current.data.summary}>
+  <div class="now-page">
+    <div class="now-page__intro" aria-label="页面说明">
+      <a href="/now/" class="now-page__mark" aria-current="page">NOW</a>
+      <p>如果很久没见，这是我会告诉你的近况。</p>
+    </div>
+
+    <NowEntry entry={current} current permalink>
+      <Content />
+    </NowEntry>
+
+    <section class="archive" aria-labelledby="archive-title">
+      <div class="archive__heading">
+        <div>
+          <p class="archive__kicker">ARCHIVE</p>
+          <h2 id="archive-title">过去的现在</h2>
+        </div>
+        <p>每次更新都留在这里，记下注意力如何随时间移动。</p>
+      </div>
+
+      {archive.length > 0 ? (
+        <div class="archive__years">
+          {[...archiveByYear].map(([year, yearEntries]) => (
+            <section class="archive__year" aria-labelledby={`year-${year}`}>
+              <h3 id={`year-${year}`}>{year}</h3>
+              <ol>
+                {yearEntries.map(entry => (
+                  <li>
+                    <a href={getNowUrl(entry.id)}>
+                      <time datetime={entry.data.date.toISOString()}>{formatNowDate(entry.data.date)}</time>
+                      <span class="archive__title">{entry.data.title}</span>
+                      <span class="archive__arrow" aria-hidden="true">→</span>
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          ))}
+        </div>
+      ) : (
+        <p class="archive__empty">这是第一份记录。时间会从这里慢慢向下生长。</p>
+      )}
+    </section>
+
+    <aside class="now-page__note">
+      <span aria-hidden="true">/now</span>
+      <p>
+        Now Page 的想法来自 <a href="https://nownownow.com/about" target="_blank" rel="noopener noreferrer">Derek Sivers</a>：
+        它不是动态，也不是履历，而是此刻生活重心的一张快照。
+      </p>
+    </aside>
+  </div>
+</BaseLayout>
+
+<style>
+  :global(:root) {
+    --now-current: #b45309;
+    --now-current-soft: rgba(180, 83, 9, 0.13);
+  }
+
+  :global(:root[data-theme='dark']) {
+    --now-current: #fbbf24;
+    --now-current-soft: rgba(251, 191, 36, 0.14);
+  }
+
+  .now-page {
+    max-width: 48rem;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 0;
+  }
+
+  .now-page__intro {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--color-border-soft);
+  }
+
+  .now-page__mark {
+    color: var(--color-fg);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-decoration: none;
+  }
+
+  .now-page__intro p {
+    margin: 0;
+    color: var(--color-fg-mute);
+    font-size: 0.8rem;
+    line-height: 1.6;
+    text-align: right;
+  }
+
+  .archive {
+    margin-top: 5.5rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .archive__heading {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(15rem, 22rem);
+    gap: 2rem;
+    align-items: end;
+  }
+
+  .archive__kicker {
+    margin: 0 0 0.6rem;
+    color: var(--now-current);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    font-weight: 600;
+  }
+
+  .archive__heading h2 {
+    margin: 0;
+    color: var(--color-fg);
+    font-size: 1.65rem;
+    font-weight: 700;
+    letter-spacing: 0;
+  }
+
+  .archive__heading > p,
+  .archive__empty {
+    margin: 0;
+    color: var(--color-fg-mute);
+    font-size: 0.9rem;
+    line-height: 1.75;
+  }
+
+  .archive__years {
+    margin-top: 2.5rem;
+  }
+
+  .archive__year {
+    display: grid;
+    grid-template-columns: 5rem minmax(0, 1fr);
+    gap: 1.5rem;
+  }
+
+  .archive__year + .archive__year {
+    margin-top: 2.5rem;
+  }
+
+  .archive__year h3 {
+    margin: 0;
+    color: var(--color-fg-mute);
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+
+  .archive__year ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--color-border-soft);
+  }
+
+  .archive__year li {
+    border-bottom: 1px solid var(--color-border-soft);
+  }
+
+  .archive__year a {
+    display: grid;
+    grid-template-columns: 8rem minmax(0, 1fr) 1.5rem;
+    gap: 1rem;
+    align-items: center;
+    min-height: 4.25rem;
+    color: var(--color-fg);
+    text-decoration: none;
+  }
+
+  .archive__year a:hover .archive__title,
+  .archive__year a:hover .archive__arrow {
+    color: var(--color-accent);
+  }
+
+  .archive__year time {
+    color: var(--color-fg-mute);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+  }
+
+  .archive__title {
+    transition: color 0.15s ease;
+  }
+
+  .archive__arrow {
+    color: var(--color-fg-mute);
+    text-align: right;
+    transition: color 0.15s ease;
+  }
+
+  .archive__empty {
+    margin-top: 2.5rem;
+    padding: 1.25rem 0;
+    border-top: 1px solid var(--color-border-soft);
+    border-bottom: 1px solid var(--color-border-soft);
+  }
+
+  .now-page__note {
+    display: grid;
+    grid-template-columns: 5rem minmax(0, 1fr);
+    gap: 1.5rem;
+    margin-top: 5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-border-soft);
+    color: var(--color-fg-mute);
+    font-size: 0.78rem;
+    line-height: 1.7;
+  }
+
+  .now-page__note > span {
+    font-family: var(--font-mono);
+    color: var(--now-current);
+  }
+
+  .now-page__note p {
+    margin: 0;
+  }
+
+  .now-page__note a {
+    color: var(--color-fg-soft);
+    text-underline-offset: 3px;
+  }
+
+  .now-page__note a:hover {
+    color: var(--color-accent);
+  }
+
+  @media (max-width: 40rem) {
+    .now-page {
+      padding-top: 2rem;
+    }
+
+    .now-page__intro {
+      display: block;
+    }
+
+    .now-page__intro p {
+      margin-top: 0.55rem;
+      text-align: left;
+    }
+
+    .archive {
+      margin-top: 4.5rem;
+    }
+
+    .archive__heading {
+      display: block;
+    }
+
+    .archive__heading > p {
+      margin-top: 0.8rem;
+    }
+
+    .archive__year {
+      display: block;
+    }
+
+    .archive__year h3 {
+      margin-bottom: 0.75rem;
+    }
+
+    .archive__year a {
+      grid-template-columns: 1fr 1.5rem;
+      gap: 0.35rem 1rem;
+      padding: 0.85rem 0;
+    }
+
+    .archive__year time {
+      grid-column: 1;
+    }
+
+    .archive__title {
+      grid-column: 1;
+    }
+
+    .archive__arrow {
+      grid-column: 2;
+      grid-row: 1 / 3;
+    }
+
+    .now-page__note {
+      grid-template-columns: 1fr;
+      gap: 0.55rem;
+    }
+  }
+</style>

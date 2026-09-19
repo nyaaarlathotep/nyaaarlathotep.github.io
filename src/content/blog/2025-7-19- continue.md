@@ -13,7 +13,7 @@ essays: true
 
 我的观点仍然是：卫语句还是更好，在逻辑过于复杂时，尽早返回有助于减少心智负担，而只有逻辑相对较少且比较简单的情况下避免 continue 才会让代码更加清晰。
 
-# 避免使用 continue
+## 避免使用 continue
 
 > “我从未见过哪段代码在重构并移除 `continue` 语句后没有得到改进的。”
 >
@@ -39,7 +39,7 @@ for (int i = 0; i < 10; i++) {
 
 更实际地说，它实际上就是一个 `goto` 语句，并以类似的方式破坏了代码的流程。在快速浏览代码时，我们很容易忽略它：
 
-```Java
+```java
 for (Node node : nodeList) {
     if (node.isBad()) {
         continue;

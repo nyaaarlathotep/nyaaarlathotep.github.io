@@ -7,7 +7,7 @@ keywords: SICP, Scheme
 essays: true
 ---
 
-# Chapter 2
+## Chapter 2
 
 The abstraction of data lead to the interface of the data.
 

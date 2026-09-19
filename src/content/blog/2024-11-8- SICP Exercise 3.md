@@ -7,7 +7,7 @@ keywords: SICP, Scheme
 essays: true
 ---
 
-# Chapter 3
+## Chapter 3
 
 > Until now, all our procedures could be viewed as specifications for computing mathematical functions. A call to a procedure computed the value of the function applied to the given arguments, and two calls to the same procedure with the same arguments always produced the same result.
 
