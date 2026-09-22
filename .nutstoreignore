@@ -1,7 +1,0 @@
-# Dependencies and generated outputs do not need Nutstore synchronization.
-node_modules/
-**/node_modules/
-dist/
-build/
-.next/
-coverage/
