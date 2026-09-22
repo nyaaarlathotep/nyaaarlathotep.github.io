@@ -8,10 +8,16 @@ interface Props {
   date: Date;
   categories: string[];
   description?: string;
+  headings?: Array<{
+    depth: number;
+    slug: string;
+    text: string;
+  }>;
 }
 
-const { title, date, categories, description } = Astro.props;
+const { title, date, categories, description, headings = [] } = Astro.props;
 const isSicp = categories.some(c => c.toLowerCase() === 'sicp');
+const showToc = headings.length >= 3;
 
 const formatDate = (d: Date) => {
   return d.toLocaleDateString('zh-CN', {
@@ -23,38 +29,223 @@ const formatDate = (d: Date) => {
 ---
 
 <BaseLayout title={title} description={description}>
-  <article class="max-w-3xl mx-auto px-6 py-12">
-    <header class="mb-10 pb-6 border-b border-border-soft">
-      <h1 class="text-3xl md:text-4xl font-bold text-fg leading-tight tracking-tight">
-        {title}
-      </h1>
-      <div class="flex flex-wrap items-center gap-x-3 gap-y-2 mt-4 text-sm text-fg-mute">
-        <time datetime={date.toISOString()} class="tabular-nums">
-          {formatDate(date)}
-        </time>
-        {categories.length > 0 && (
-          <div class="flex items-center gap-1.5">
-            {categories.map(cat => (
-              <a
-                href={`/categories/#${cat}`}
-                class="px-2.5 py-0.5 text-xs rounded-full bg-accent-soft text-accent font-medium hover:bg-accent/15 transition-colors"
-              >
-                {cat}
-              </a>
-            ))}
-          </div>
-        )}
+  <article class:list={['post-layout', { 'post-layout--with-toc': showToc }]}>
+    <div class="post-layout__main">
+      <header class="post-header">
+        <h1>{title}</h1>
+        {description && <p class="post-header__description">{description}</p>}
+        <div class="post-header__meta">
+          <time datetime={date.toISOString()} class="tabular-nums">
+            {formatDate(date)}
+          </time>
+          {categories.length > 0 && (
+            <div class="post-header__categories">
+              {categories.map(cat => (
+                <a href={`/categories/#${cat}`}>{cat}</a>
+              ))}
+            </div>
+          )}
+        </div>
+      </header>
+
+      {isSicp && <SicpBanner />}
+
+      <div class="prose post-layout__body">
+        <slot />
       </div>
-    </header>
 
-    {isSicp && <SicpBanner />}
-
-    <div class="prose">
-      <slot />
+      <div class="post-layout__comments">
+        <Comments />
+      </div>
     </div>
 
-    <div class="mt-16 pt-8 border-t border-border-soft">
-      <Comments />
-    </div>
+    {showToc && (
+      <aside class="post-toc">
+        <nav aria-labelledby="post-toc-title">
+          <p id="post-toc-title">本文目录</p>
+          <ol>
+            {headings.map(heading => (
+              <li data-depth={heading.depth}>
+                <a href={`#${heading.slug}`}>{heading.text}</a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      </aside>
+    )}
   </article>
 </BaseLayout>
+
+<style>
+  .post-layout {
+    width: 100%;
+    max-width: 48rem;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 0;
+  }
+
+  .post-layout--with-toc {
+    max-width: 75rem;
+    display: grid;
+    grid-template-columns: minmax(0, 10rem) minmax(0, 48rem) minmax(0, 10rem);
+    gap: 2rem;
+  }
+
+  .post-layout__main {
+    min-width: 0;
+  }
+
+  .post-layout--with-toc .post-layout__main {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .post-header {
+    max-width: 72ch;
+    margin-bottom: 2.75rem;
+    margin-inline: auto;
+    padding-bottom: 1.75rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .post-header h1 {
+    margin: 0;
+    color: var(--color-fg);
+    font-size: clamp(1.9rem, 5vw, 2.5rem);
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: 0;
+    text-wrap: balance;
+  }
+
+  .post-header__description {
+    max-width: 42rem;
+    margin: 1rem 0 0;
+    color: var(--color-fg-soft);
+    font-size: 1.05rem;
+    line-height: 1.75;
+  }
+
+  .post-header__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+    color: var(--color-fg-mute);
+    font-size: 0.875rem;
+  }
+
+  .post-header__categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .post-header__categories a {
+    padding: 0.18rem 0.6rem;
+    border-radius: 999px;
+    background: var(--color-accent-soft);
+    color: var(--color-accent);
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .post-header__categories a:hover {
+    background: color-mix(in srgb, var(--color-accent) 18%, transparent);
+    color: var(--color-accent-fg);
+  }
+
+  .post-layout__body {
+    max-width: 72ch;
+    margin-inline: auto;
+  }
+
+  .post-layout__comments {
+    max-width: 72ch;
+    margin: 4rem auto 0;
+    padding-top: 2rem;
+    border-top: 1px solid var(--color-border-soft);
+  }
+
+  .post-toc {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: start;
+    min-width: 0;
+    margin-top: 3rem;
+  }
+
+  .post-toc nav {
+    position: sticky;
+    top: 6rem;
+    max-height: calc(100vh - 8rem);
+    overflow-y: auto;
+    padding-left: 1rem;
+    border-left: 1px solid var(--color-border);
+  }
+
+  .post-toc p {
+    margin: 0 0 0.85rem;
+    color: var(--color-fg);
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  .post-toc ol {
+    display: grid;
+    gap: 0.65rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .post-toc li[data-depth='3'] {
+    padding-left: 0.75rem;
+  }
+
+  .post-toc a {
+    display: block;
+    color: var(--color-fg-mute);
+    font-size: 0.78rem;
+    line-height: 1.45;
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .post-toc li[data-depth='2'] a {
+    color: var(--color-fg-soft);
+    font-weight: 500;
+  }
+
+  .post-toc a:hover {
+    color: var(--color-accent);
+  }
+
+  @media (max-width: 75rem) {
+    .post-layout--with-toc {
+      max-width: 48rem;
+      display: block;
+    }
+
+    .post-toc {
+      display: none;
+    }
+  }
+
+  @media (max-width: 40rem) {
+    .post-layout {
+      padding-top: 2rem;
+    }
+
+    .post-header {
+      margin-bottom: 2.25rem;
+    }
+
+    .post-header__description {
+      font-size: 1rem;
+    }
+  }
+</style>
